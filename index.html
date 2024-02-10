@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mimoza</title>
+    <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
+    <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <nav
+      class="navbar navbar-expand-lg bg-dark sticky-top"
+      data-bs-theme="dark"
+    >
+      <div class="container-fluid">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarTogglerDemo03"
+          aria-controls="navbarTogglerDemo03"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
+        </button>
+        <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link active" aria-current="page" href="#"
+                >Reservations</a
+              >
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link" href="#">Charges</a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link">Credits</a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link">Avances</a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link">Clients</a>
+            </li>
+          </ul>
+          <form class="d-flex align-items-center" role="search">
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <li class="nav-item"></li>
+
+            <button class="btn btn-success" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="px-4">
+      <h1 class="mt-4">Reservations</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item fs-3 active">October 2023</li>
+      </ol>
+    </div>
+
+    <div id="table" class="container-fluid"></div>
+
+    <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
+      <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
+    </div>
+
+    <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
+      <ul class="nav nav-underline" data-bs-theme="dark">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">January</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">February</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">March</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">April</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">May</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">June</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">July</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">August</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">September</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">October</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">November</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">December</a>
+        </li>
+      </ul>
+
+      <div class="btn-group dropup">
+        <button
+          type="button"
+          class="btn btn-dark dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          2024
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark">
+          <li><a class="dropdown-item" href="#">2023</a></li>
+          <li><a class="dropdown-item" href="#">2022</a></li>
+          <li><a class="dropdown-item" href="#">2021</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <script src="public/jquery/dist/jquery.js"></script>
+    <script src="public/popper.js"></script>
+    <script src="public/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="public/luxon.js"></script>
+    <script src="public/tab/dist/js/tabulator.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let reservations = window.api.getReservations();
+        console.log(reservations);
+        document
+          .getElementById("addRow")
+          .addEventListener("click", function () {
+            table.addRow({
+              caisse: 0,
+              credit: 0,
+              prix: 0,
+              n_jr: 0,
+              montant: 0,
+            });
+          });
+
+        var rowMenu = [
+          {
+            label:
+              "<span style='color: #a9d2f0; background-color: #a9d2f0; padding: 0px; border-radius: 0px;'>□</span>Meknes",
+            action: function (e, row) {
+              row.getElement().style.backgroundColor = "#a9d2f0";
+            },
+          },
+          {
+            label:
+              "<span style='color:#000000; background-color:#FFFFFF; padding:0px; border-radius: 0px;'>□</span>A retouner",
+            action: function (e, row) {
+              row.getElement().style.backgroundColor = "white";
+            },
+          },
+          {
+            label:
+              "<span style='color:#bfd834; background-color: #bfd834; padding: 0px; border-radius: 0px;'>□</span> En circullation ",
+            action: function (e, row) {
+              row.getElement().style.backgroundColor = "#bfd834";
+            },
+          },
+
+          {
+            label:
+              "<span style='color:#ffc06e; background-color: #ffc06e; padding: 0px; border-radius: 0px;'>□</span>Incident ",
+            action: function (e, row) {
+              row.getElement().style.backgroundColor = "#ffc06e";
+            },
+          },
+
+          {
+            separator: true,
+          },
+          {
+            label: "Admin Functions",
+            menu: [
+              {
+                label: "<i class='fas fa-trash'></i> Delete Row",
+                action: function (e, row) {
+                  row.delete();
+                },
+              },
+              {
+                label: "<i class='fas fa-ban'></i> Disabled Option",
+                disabled: true,
+              },
+            ],
+          },
+        ];
+
+        let cars = [
+          "F09",
+          "F10",
+          "F11",
+          "F12",
+          "F13",
+          "F14",
+          "F15",
+          "F16",
+          "F17",
+          "F18",
+          "F19",
+        ];
+        //random list of clients names for testing
+        let clients = [
+          "Oli Bob",
+          "Mary May",
+          "Christine Lobowski",
+          "Brendon Philips",
+          "Margret Marmajuke",
+          "Frank Harbours",
+          "Jamie Newhart",
+          "Gavin Joyce",
+          "John Doe",
+          "Mary Jane",
+        ];
+
+        var table = new Tabulator("#table", {
+          index: "id",
+          data: reservations,
+          layout: "fitDataStretch",
+          rowContextMenu: rowMenu, //add context menu to rows
+          rowFormatterPrint: false, //disable standard formatter when printing
+          columns: [
+            {
+              title: "Tel",
+              field: "tel",
+              sorter: false,
+              editor: true,
+            },
+            {
+              title: "Sortie",
+              headerHozAlign: "center",
+              field: "date_sortie",
+              editor: "datetime",
+              width: 200,
+              editorParams: {
+                format: "dd/MM/yyyy 🕖 HH:mm",
+              },
+            },
+            {
+              title: "Nom",
+              field: "nom",
+              editor: "list",
+              editorParams: {
+                values: clients,
+                autocomplete: "true",
+                allowEmpty: true,
+                listOnEmpty: true,
+                valuesLookup: true,
+                freetext: true,
+              },
+            },
+            {
+              title: "VHCL",
+              field: "car_code",
+              editor: "list",
+              editorParams: {
+                values: cars,
+                autocomplete: "true",
+                allowEmpty: true,
+                listOnEmpty: true,
+                valuesLookup: true,
+                freetext: true,
+              },
+            },
+            {
+              title: "Date d'entrer",
+              headerHozAlign: "center",
+              field: "date_entree",
+              editor: "datetime",
+              width: 200,
+              editorParams: {
+                format: "dd/MM/yyyy 🕖 HH:mm",
+              },
+            },
+            {
+              title: "Prix",
+              field: "prix",
+              editor: true,
+              formatter: "money",
+              formatterParams: {
+                precision: 2,
+              },
+              mutateLink: "montant",
+            },
+            ,
+            {
+              title: "Jr",
+              field: "n_jr",
+              editor: true,
+              mutateLink: "montant",
+            },
+            {
+              title: "Montant",
+              field: "montant",
+              formatter: "money",
+              formatterParams: {
+                precision: 2,
+              },
+              mutator: function (value, data) {
+                return data.prix * data.n_jr;
+              },
+              bottomCalc: "sum",
+              bottomCalcParams: {
+                precision: 2,
+              },
+              mutateLink: "credit",
+            },
+            {
+              title: "Caisse",
+              field: "caisse",
+              bottomCalc: "sum",
+              bottomCalcParams: {
+                precision: 2,
+              },
+              editor: true,
+              formatter: "money",
+              formatterParams: {
+                precision: 2,
+              },
+              mutateLink: "credit",
+            },
+            {
+              title: "Credit",
+              field: "credit",
+              mutator: function (value, data) {
+                return data.montant - data.caisse;
+              },
+              bottomCalc: "sum",
+              bottomCalcParams: {
+                precision: 2,
+              },
+              formatter: function (cell, formatterParams) {
+                var value = cell.getValue();
+                if (value != 0) {
+                  cell.getElement().style.backgroundColor = "#de9d9d";
+                }
+                var formattedValue = value.toLocaleString(undefined, {
+                  minimumFractionDigits: formatterParams.precision || 2,
+                  maximumFractionDigits: formatterParams.precision || 2,
+                });
+                return formattedValue;
+              },
+              /* cellEdited: function(cell) {
+                var value = cell.getValue();
+                if (value != 0) {
+                cell.getElement().style.backgroundColor = "#de9d9d";
+                } else {
+                // Handle the case where the value is empty
+                cell.getElement().style.backgroundColor = ""; // Reset to default
+                }
+                },*/
+            },
+            {
+              title: "Observation",
+              field: "observation",
+              editor: true,
+            },
+          ],
+        });
+
+        table.on("cellEdited", async function (cell) {
+          console.log("cell edited");
+          let updatedData = {
+            [cell.getField()]: cell.getValue(),
+          };
+          console.log(updatedData);
+          try {
+            const response = await window.api.updateReservations(
+              cell.getRow().getData().id,
+              cell.getField(),
+              cell.getValue(),
+              cell.getRow().getData().nom,
+              cell.getRow().getData().tel
+            );
+            console.log(response);
+            response.nom
+              ? cell.getRow().update({
+                  nom: response.nom,
+                  tel: response.tel,
+                })
+              : null;
+          } catch (error) {
+            console.error("Error updating reservations:", error);
+          }
+        });
+
+        table.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeReservations(); // Call the storeReservations function from the preload script
+            console.log(response);
+            row.update({ id: response });
+          } catch (error) {
+            console.error("Error storing reservations:", error);
+          }
+        });
+
+        table.on("rowDeleted", function (row) {
+          $.ajax({
+            url: "/reservations/" + row.getData().id,
+            type: "DELETE",
+            headers: {
+              "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+              console.log(response);
+            },
+            error: function (error) {
+              console.error(error);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "name": "mimoza",
+  "version": "1.0.0",
+  "description": "admin dashboard for mimoza",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": [],
+  "author": "mimoza",
+  "license": "ISC",
+  "devDependencies": {
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/maker-zip": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+    "@electron/rebuild": "^3.6.0",
+    "better-sqlite3": "^9.4.0",
+    "electron": "^22.3.27"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.0",
+    "electron-rebuild": "^3.2.9",
+    "electron-squirrel-startup": "^1.0.0",
+    "sqlite-electron": "^3.0.5"
+  }
+}
