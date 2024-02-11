@@ -48,10 +48,7 @@
     </nav>
 
     <div class="px-4">
-        <h1 class="mt-4">Reservations</h1>
-        <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item fs-3 active">October 2023</li>
-        </ol>
+        <h1 class="mt-4">Park Mimoza <span id="currentYear"></span></h1>
     </div>
 
     <div id="table" class="container-fluid"></div>
@@ -60,57 +57,7 @@
         <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
     </div>
 
-    <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
-        <ul class="nav nav-underline" data-bs-theme="dark">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">January</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">February</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">March</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">April</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">May</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">June</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">July</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">August</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">September</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">October</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">November</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">December</a>
-            </li>
-        </ul>
 
-        <div class="btn-group dropup">
-            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                2024
-            </button>
-            <ul class="dropdown-menu dropdown-menu-dark">
-                <li><a class="dropdown-item" href="#">2023</a></li>
-                <li><a class="dropdown-item" href="#">2022</a></li>
-                <li><a class="dropdown-item" href="#">2021</a></li>
-            </ul>
-        </div>
-    </div>
 
     <script src="public/jquery/dist/jquery.js"></script>
     <script src="public/popper.js"></script>
@@ -118,6 +65,27 @@
     <script src="public/luxon.js"></script>
     <script src="public/tab/dist/js/tabulator.js"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        let cars = window.api.getCars();
+        console.log(cars);
+        });
+        document.getElementById('addRow').addEventListener('click', function () {
+            table.addRow({
+                marque: "",
+                immatricule: "",
+                model: "",
+                la_visite: "",
+                fin_de_circulation: "",
+                mainlevee: "",
+                facture_achat: "",
+                prix: ""
+            });
+        });
+        // Set the current year
+        let currentYear = new Date().getFullYear();
+        document.getElementById('currentYear').innerHTML = currentYear;
+
+        // Tabulator
         let marques = ['toyota', 'ford', 'fiat', 'mercedes'];
         let years = [];
 
@@ -134,7 +102,7 @@
             title: "Marque",
             field: "marque",
             sorter: "string",
-            editor: "select",
+            editor: "list",
             editorParams: {
                 values: marques
             }
@@ -167,18 +135,17 @@
             editor: "input",
             mutator: function (value, data) {
                 console.log(data.model);
-                //create a new date with data.model as the year
-                
-                let ModelYear = new Date(data.model,0);
+              
+                let ModelYear = new Date(data.model, 0);
                 console.log(ModelYear);
-               
+
                 let finCirculationDate = new Date(ModelYear);
                 finCirculationDate.setFullYear(ModelYear.getFullYear() + 5);
-                
+
                 console.log(finCirculationDate);
-                //return finCirculationDate in d/mm/yyyy format
+                
                 return finCirculationDate.toLocaleDateString();
-               
+
 
 
             }
@@ -187,7 +154,7 @@
         {
             title: "Mainlevee",
             field: "mainlevee",
-            editor: 'select',
+            editor: 'list',
             editorParams: {
                 values: MainLeveeOptions
             }
@@ -196,7 +163,7 @@
             title: "Facture d'Achat",
             field: "facture_achat",
             sorter: "string",
-            editor: "select",
+            editor: "list",
             editorParams: {
                 values: factureOptions
             }
@@ -234,6 +201,8 @@
             tooltips: true,
             addRowPos: "bottom",
             history: true,
+            virtualDom: true,
+            height: "300px"
         });
 
 

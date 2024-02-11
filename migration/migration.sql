@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS cars (
     id_vhcl INTEGER PRIMARY KEY AUTOINCREMENT,
     marque TEXT,
-    imt TEXT,
-    code TEXT,
-    fin_circ DATE,
-    visite DATE,
+    immatricule TEXT,
+    model TEXT,
+    la_visite DATE,
+    fin_de_circulation DATE,
     mainlevee INTEGER DEFAULT 0,
     facture_achat INTEGER DEFAULT 0,
-    prix_achat REAL
+    prix REAL
 );
 CREATE TABLE IF NOT EXISTS clients 
 (
