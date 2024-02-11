@@ -6,9 +6,9 @@ contextBridge.exposeInMainWorld("api", {
   getReservations: () => Reservations.getReservations(),
   storeReservations:() => Reservations.storeReservations(),
   updateReservations: (id, field,value,nom,tel) => Reservations.updateReservations(id, field, value,nom,tel),
+  
   getCars: () => Cars.getCars(),
-  storeCars: (marque, immatricule, model, la_visite, fin_de_circulation, mainlevee, facture_achat, prix) => 
-  Cars.storeCars(marque, immatricule, model, la_visite, fin_de_circulation, mainlevee, facture_achat, prix)
+  storeCars: () => Cars.storeCars()
 });
 
 

@@ -12,11 +12,9 @@ exports.getCars = function () {
 
 exports.storeCars = (marque, immatricule, model, la_visite, fin_de_circulation, mainlevee, facture_achat, prix) => {
     const stmt = db.prepare(
-        `INSERT INTO cars (marque, immatricule, model, la_visite, fin_de_circulation, mainlevee, facture_achat, prix)
-         VALUES ($marque, $immatricule, $model, $la_visite, $fin_de_circulation, $mainlevee, $facture_achat, $prix)`
+        `INSERT INTO cars DEFAULT VALUES;`
     );
-    const info = stmt.run({ $marque: marque, $immatricule: immatricule, $model: model, $la_visite: la_visite, $fin_de_circulation: fin_de_circulation, $mainlevee: mainlevee, $facture_achat: facture_achat, $prix: prix });
-    console.log(info.lastInsertRowid);
+    const info = stmt.run();
     return info.lastInsertRowid;
 }
 

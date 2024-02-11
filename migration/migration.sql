@@ -3,8 +3,8 @@ CREATE TABLE IF NOT EXISTS cars (
     marque TEXT,
     immatricule TEXT,
     model TEXT,
-    la_visite DATE,
-    fin_de_circulation DATE,
+    la_visite TEXT,
+    fin_de_circulation TEXT,
     mainlevee INTEGER DEFAULT 0,
     facture_achat INTEGER DEFAULT 0,
     prix REAL

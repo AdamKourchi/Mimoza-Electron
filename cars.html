@@ -68,18 +68,9 @@
         document.addEventListener("DOMContentLoaded", function () {
         let cars = window.api.getCars();
         console.log(cars);
-        });
+     
         document.getElementById('addRow').addEventListener('click', function () {
-            table.addRow({
-                marque: "",
-                immatricule: "",
-                model: "",
-                la_visite: "",
-                fin_de_circulation: "",
-                mainlevee: "",
-                facture_achat: "",
-                prix: ""
-            });
+            table.addRow({ });
         });
         // Set the current year
         let currentYear = new Date().getFullYear();
@@ -194,7 +185,7 @@
 
 
         var table = new Tabulator("#table", {
-            data: Parkdata,
+            data: cars,
             columns: columns,
             layout: "fitColumns",
             responsiveLayout: "hide",
@@ -206,6 +197,20 @@
         });
 
 
+
+        table.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeCars(); // Call the storeReservations function from the preload script
+            console.log(response);
+            row.update({ id: response });
+          } catch (error) {
+            console.error("Error storing reservations:", error);
+          }
+        });
+
+
+
+    });
     </script>
 </body>
 
