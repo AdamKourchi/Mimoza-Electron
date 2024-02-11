@@ -1,16 +1,43 @@
 let dbmgr = require("./dbmgr.js");
 let db = dbmgr.db;
 
-exports.getReservations = function (month, year) {
+exports.getCredits = function (month, year) {
   const stmt = db.prepare(`
-    SELECT *, clients.nom, clients.tel 
-    FROM reservations 
-    LEFT JOIN clients ON reservations.idclient = clients.idclient
-    WHERE date_sortie LIKE '__/${month}/${year} %';
+    SELECT *, clients.nom
+    FROM credits 
+    LEFT JOIN clients ON credits.creditR = clients.idclient
+    WHERE date_payment LIKE '__/${month}/${year} %';
   `);
 
   return stmt.all();
 };
+
+exports.getNonPayed = function (month, year) {
+    const stmt = db.prepare(`
+      SELECT *, clients.nom
+      FROM reservations 
+      LEFT JOIN clients ON reservations.idclient = clients.idclient
+      WHERE date_sortie LIKE '__/${month}/${year} %'
+      AND credit != 0;
+    `);
+  
+    return stmt.all();
+  };
+  
+  exports.storeCredits = () => {
+    const stmt = db.prepare(
+      `INSERT INTO credits (date_payment) VALUES (strftime('%d/%m/%Y', 'now','localtime'))`
+    );
+    const info = stmt.run();
+    const insertedRowId = info.lastInsertRowid;
+    const insertedRow = db
+      .prepare("SELECT * FROM credits WHERE rowid = ?")
+      .get(insertedRowId);
+  
+    return insertedRow;
+  };
+
+
 
 exports.storeReservations = () => {
   const stmt = db.prepare(
@@ -102,33 +129,3 @@ exports.deleteReservations = (id) => {
   const result = stmt.run({ id });
   return result;
 };
-
-/*
- r.id AS id,
-    r.date_sortie AS date_sortie,
-    r.date_entree AS date_entree,
-    r.prix AS prix,
-    r.n_jr AS n_jr,
-    r.montant AS montant,
-    r.caisse AS caisse,
-    r.credit AS credit,
-    r.observation AS observation,
-    r.status AS status,
-    c.idclient AS client_id,
-    c.nom AS client_nom,
-    c.tel AS client_tel,
-    ca.id_vhcl AS car_id,
-    ca.marque AS car_marque,
-    ca.imt AS car_imt,
-    ca.code AS car_code,
-    ca.fin_circ AS car_fin_circ,
-    ca.visite AS car_visite,
-    ca.mainlevee AS car_mainlevee,
-    ca.facture_achat AS car_facture_achat,
-    ca.prix_achat AS car_prix_achat
-    FROM 
-    reservations r
-INNER JOIN 
-    clients c ON r.idclient = c.idclient
-INNER JOIN 
-    cars ca ON r.id_vhcl = ca.id_vhcl;*/
