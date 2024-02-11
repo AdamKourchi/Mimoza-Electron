@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Mimoza</title>
+    <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
+    <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark sticky-top" data-bs-theme="dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
+            </button>
+            <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link " aria-current="page" href="index.html">Reservations</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link active" href="#">Park</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link" href="#">Charges</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link">Credits</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link">Avances</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link">Clients</a>
+                    </li>
+                </ul>
+                <form class="d-flex align-items-center" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                    <li class="nav-item"></li>
+
+                    <button class="btn btn-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="px-4">
+        <h1 class="mt-4">Reservations</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item fs-3 active">October 2023</li>
+        </ol>
+    </div>
+
+    <div id="table" class="container-fluid"></div>
+
+    <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
+        <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
+    </div>
+
+    <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
+        <ul class="nav nav-underline" data-bs-theme="dark">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">January</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">February</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">March</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">April</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">May</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">June</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">July</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">August</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">September</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">October</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">November</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">December</a>
+            </li>
+        </ul>
+
+        <div class="btn-group dropup">
+            <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                2024
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item" href="#">2023</a></li>
+                <li><a class="dropdown-item" href="#">2022</a></li>
+                <li><a class="dropdown-item" href="#">2021</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="public/jquery/dist/jquery.js"></script>
+    <script src="public/popper.js"></script>
+    <script src="public/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="public/luxon.js"></script>
+    <script src="public/tab/dist/js/tabulator.js"></script>
+    <script>
+        let marques = ['toyota', 'ford', 'fiat', 'mercedes'];
+        let years = [];
+
+        for (let i = 1990; i <= 2050; i++) {
+            years.push(i);
+        }
+
+        let factureOptions = ['disponible', 'non disponiple'];
+
+        let MainLeveeOptions = ['disponible', 'en credit'];
+
+
+        var columns = [{
+            title: "Marque",
+            field: "marque",
+            sorter: "string",
+            editor: "select",
+            editorParams: {
+                values: marques
+            }
+        },
+        {
+            title: "Immatricule",
+            field: "immatricule",
+            sorter: "string",
+            editor: "input"
+        },
+        {
+            title: "Model",
+            field: "model",
+            editor: "list",
+            editorParams: {
+                values: years
+            },
+            mutateLink: 'fin_de_circulation'
+        },
+        {
+            title: "La Visite",
+            field: "la_visite",
+            sorter: "date",
+            editor: "datetime",
+
+        },
+        {
+            title: "Fin de Circulation",
+            field: "fin_de_circulation",
+            editor: "input",
+            mutator: function (value, data) {
+                console.log(data.model);
+                //create a new date with data.model as the year
+                
+                let ModelYear = new Date(data.model,0);
+                console.log(ModelYear);
+               
+                let finCirculationDate = new Date(ModelYear);
+                finCirculationDate.setFullYear(ModelYear.getFullYear() + 5);
+                
+                console.log(finCirculationDate);
+                //return finCirculationDate in d/mm/yyyy format
+                return finCirculationDate.toLocaleDateString();
+               
+
+
+            }
+
+        },
+        {
+            title: "Mainlevee",
+            field: "mainlevee",
+            editor: 'select',
+            editorParams: {
+                values: MainLeveeOptions
+            }
+        },
+        {
+            title: "Facture d'Achat",
+            field: "facture_achat",
+            sorter: "string",
+            editor: "select",
+            editorParams: {
+                values: factureOptions
+            }
+        },
+        {
+            title: "Prix",
+            field: "prix",
+            sorter: "number",
+            align: "right",
+            formatter: "money",
+            editor: "input"
+        },
+        ];
+
+
+        var Parkdata = [{
+            marque: "",
+            immatricule: "",
+            model: "2005",
+            la_visite: "",
+            fin_de_circulation: "",
+            mainlevee: "",
+            facture_achat: "",
+            prix: ""
+        },
+
+        ];
+
+
+        var table = new Tabulator("#table", {
+            data: Parkdata,
+            columns: columns,
+            layout: "fitColumns",
+            responsiveLayout: "hide",
+            tooltips: true,
+            addRowPos: "bottom",
+            history: true,
+        });
+
+
+    </script>
+</body>
+
+</html>
