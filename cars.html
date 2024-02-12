@@ -66,151 +66,170 @@
     <script src="public/tab/dist/js/tabulator.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-        let cars = window.api.getCars();
-        console.log(cars);
-     
-        document.getElementById('addRow').addEventListener('click', function () {
-            table.addRow({ });
-        });
-        // Set the current year
-        let currentYear = new Date().getFullYear();
-        document.getElementById('currentYear').innerHTML = currentYear;
+            let cars = window.api.getCars();
+            console.log(cars);
 
-        // Tabulator
-        let marques = ['toyota', 'ford', 'fiat', 'mercedes'];
-        let years = [];
+            document.getElementById('addRow').addEventListener('click', function () {
+                table.addRow({
+                    marque: "",
+                    immatricule: "",
+                    model: "",
+                    la_visite: "",
+                    fin_de_circulation: "",
+                    mainlevee: "",
+                    facture_achat: "",
+                    prix: ""
+                });
+            });
+            // Set the current year
+            let currentYear = new Date().getFullYear();
+            document.getElementById('currentYear').innerHTML = currentYear;
 
-        for (let i = 1990; i <= 2050; i++) {
-            years.push(i);
-        }
+            // Tabulator
+            let marques = ['toyota', 'ford', 'fiat', 'mercedes'];
+            
+            let years = [];
 
-        let factureOptions = ['disponible', 'non disponiple'];
-
-        let MainLeveeOptions = ['disponible', 'en credit'];
-
-
-        var columns = [{
-            title: "Marque",
-            field: "marque",
-            sorter: "string",
-            editor: "list",
-            editorParams: {
-                values: marques
+            for (let i = 1990; i <= 2050; i++) {
+                years.push(i);
             }
-        },
-        {
-            title: "Immatricule",
-            field: "immatricule",
-            sorter: "string",
-            editor: "input"
-        },
-        {
-            title: "Model",
-            field: "model",
-            editor: "list",
-            editorParams: {
-                values: years
+
+            let factureOptions = ['disponible', 'non disponiple'];
+
+            let MainLeveeOptions = ['disponible', 'en credit'];
+
+
+            var columns = [{
+                title: "Marque",
+                field: "marque",
+                sorter: "string",
+                editor: "list",
+                editorParams: {
+                    values: marques
+                }
             },
-            mutateLink: 'fin_de_circulation'
-        },
-        {
-            title: "La Visite",
-            field: "la_visite",
-            sorter: "date",
-            editor: "datetime",
+            {
+                title: "Immatricule",
+                field: "immatricule",
+                sorter: "string",
+                editor: "input"
+            },
+            {
+                title: "Model",
+                field: "model",
+                editor: "list",
+                editorParams: {
+                    values: years
+                },
+                mutateLink: 'fin_de_circulation'
+            },
+            {
+                title: "La Visite",
+                field: "la_visite",
+                sorter: "date",
+                editor: "datetime",
 
-        },
-        {
-            title: "Fin de Circulation",
-            field: "fin_de_circulation",
-            editor: "input",
-            mutator: function (value, data) {
-                console.log(data.model);
-              
-                let ModelYear = new Date(data.model, 0);
-                console.log(ModelYear);
-
-                let finCirculationDate = new Date(ModelYear);
-                finCirculationDate.setFullYear(ModelYear.getFullYear() + 5);
-
-                console.log(finCirculationDate);
-                
-                return finCirculationDate.toLocaleDateString();
-
-
-
-            }
-
-        },
-        {
-            title: "Mainlevee",
-            field: "mainlevee",
-            editor: 'list',
-            editorParams: {
-                values: MainLeveeOptions
-            }
-        },
-        {
-            title: "Facture d'Achat",
-            field: "facture_achat",
-            sorter: "string",
-            editor: "list",
-            editorParams: {
-                values: factureOptions
-            }
-        },
-        {
-            title: "Prix",
-            field: "prix",
-            sorter: "number",
-            align: "right",
-            formatter: "money",
-            editor: "input"
-        },
-        ];
+            },
+            {
+                title: "Fin de Circulation",
+                field: "fin_de_circulation",
+                editor: "input",
+                mutator: function (value, data) {
+                    let ModelYear = new Date(data.model, 0);
+                    let finCirculationDate = new Date(ModelYear);
+                    finCirculationDate.setFullYear(ModelYear.getFullYear() + 5);
+                    return finCirculationDate.toLocaleDateString();
 
 
-        var Parkdata = [{
-            marque: "",
-            immatricule: "",
-            model: "2005",
-            la_visite: "",
-            fin_de_circulation: "",
-            mainlevee: "",
-            facture_achat: "",
-            prix: ""
-        },
 
-        ];
+                }
+
+            },
+            {
+                title: "Mainlevee",
+                field: "mainlevee",
+                editor: 'list',
+                editorParams: {
+                    values: MainLeveeOptions
+                }
+            },
+            {
+                title: "Facture d'Achat",
+                field: "facture_achat",
+                sorter: "string",
+                editor: "list",
+                editorParams: {
+                    values: factureOptions
+                }
+            },
+            {
+                title: "Prix",
+                field: "prix",
+                sorter: "number",
+                align: "right",
+                formatter: "money",
+                editor: "input"
+            },
+            ];
 
 
-        var table = new Tabulator("#table", {
-            data: cars,
-            columns: columns,
-            layout: "fitColumns",
-            responsiveLayout: "hide",
-            tooltips: true,
-            addRowPos: "bottom",
-            history: true,
-            virtualDom: true,
-            height: "300px"
+            var Parkdata = [{
+                marque: "",
+                immatricule: "",
+                model: "2005",
+                la_visite: "",
+                fin_de_circulation: "",
+                mainlevee: "",
+                facture_achat: "",
+                prix: ""
+            },
+
+            ];
+
+
+            var table = new Tabulator("#table", {
+                data: cars,
+                columns: columns,
+                layout: "fitColumns",
+                responsiveLayout: "hide",
+                tooltips: true,
+                addRowPos: "bottom",
+                history: true,
+                virtualDom: true,
+                height: "300px"
+            });
+
+
+
+            table.on("rowAdded", async function (row) {
+                try {
+                    const response = await window.api.storeCars(); // Call the storeReservations function from the preload script
+                    console.log(response);
+                    row.update({ id: response });
+                } catch (error) {
+                    console.error("Error storing cars:", error);
+                }
+            });
+            table.on("rowUpdated", async function (row) {
+                try {
+                    const response = await window.api.updateCars(row.getData()); // Call the storeReservations function from the preload script
+                    console.log(response);
+                } catch (error) {
+                    console.error("Error updating cars:", error);
+                }
+            });
+            table.on("rowDeleted", async function (row) {
+                try {
+                    const response = await window.api.deleteCars(row.getData()); // Call the storeReservations function from the preload script
+                    console.log(response);
+                } catch (error) {
+                    console.error("Error deleting cars:", error);
+                }
+            });
+
+
+
         });
-
-
-
-        table.on("rowAdded", async function (row) {
-          try {
-            const response = await window.api.storeCars(); // Call the storeReservations function from the preload script
-            console.log(response);
-            row.update({ id: response });
-          } catch (error) {
-            console.error("Error storing reservations:", error);
-          }
-        });
-
-
-
-    });
     </script>
 </body>
 

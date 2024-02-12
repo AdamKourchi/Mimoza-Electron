@@ -8,7 +8,9 @@ contextBridge.exposeInMainWorld("api", {
   updateReservations: (id, field,value,nom,tel) => Reservations.updateReservations(id, field, value,nom,tel),
   
   getCars: () => Cars.getCars(),
-  storeCars: () => Cars.storeCars()
+  storeCars: () => Cars.storeCars(),
+  updateCars: (id, field,value) => Cars.updateCars(id, field, value),
+  deleteCars: (id) => Cars.deleteCars(id)
 });
 
 
