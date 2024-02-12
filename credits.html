@@ -28,18 +28,15 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link active" aria-current="page" href="#"
+              <a class="nav-link" aria-current="page" href="index.html"
                 >Reservations</a
               >
-            </li>
-            <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="cars.html">Park</a>
             </li>
             <li class="nav-item d-flex align-items-center">
               <a class="nav-link" href="#">Charges</a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="credits.html">Crédits</a>
+              <a class="nav-link active" href="#">Crédits</a>
             </li>
             <li class="nav-item d-flex align-items-center">
               <a class="nav-link">Avances</a>
@@ -64,17 +61,22 @@
     </nav>
 
     <div class="px-4">
-      <h1 class="mt-4">Reservations</h1>
+      <h1 class="mt-4">Crédits :</h1>
       <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item fs-3 active">October 2023</li>
       </ol>
     </div>
 
     <div id="table" class="container-fluid"></div>
-
     <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
       <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
     </div>
+
+    <div class="px-4 mt-5">
+      <h1 class="mt-4">Crédits non payés :</h1>
+    </div>
+    <div id="table2" class="container-fluid"></div>
+
     <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
       <ul class="nav nav-underline" data-bs-theme="dark">
         <li class="nav-item footer">
@@ -146,7 +148,7 @@
       const monthString =
         localMonth < 10 ? "0" + localMonth : localMonth.toString();
       const yearString = localYear.toString();
-
+      //Title
       function numericMonthToName(numericMonth) {
         const months = [
           "Janvier",
@@ -171,9 +173,12 @@
 
       document.addEventListener("DOMContentLoaded", function () {
         console.log(monthString, yearString);
-        let reservations = window.api.getReservations(monthString, yearString);
+        let credits = window.api.getCredits(monthString, yearString);
+        //for non payed
+        let nonPayed = window.api.getNonPayed(monthString, yearString);
+
         title.innerHTML = numericMonthToName(monthString) + " " + yearString;
-        console.log(reservations);
+        console.log(credits);
         //Making the current month active
         const activeMonth = document.querySelector(
           `a[data-month="${monthString}"]`
@@ -298,30 +303,21 @@
 
         let table = new Tabulator("#table", {
           index: "id",
-          data: reservations,
+          data: credits,
           layout: "fitDataStretch",
           rowContextMenu: rowMenu, //add context menu to rows
           rowFormatterPrint: false, //disable standard formatter when printing
           columns: [
             {
-              title: "Tel",
-              field: "tel",
-              sorter: false,
-              editor: true,
+              title: "Date payment",
+              field: "date_payment",
+              sorter: true,
+              editor: "date",
+              formatter: "datetime",
             },
             {
-              title: "Sortie",
-              headerHozAlign: "center",
-              field: "date_sortie",
-              editor: "datetime",
-              width: 200,
-              editorParams: {
-                format: "dd/MM/yyyy 🕖 HH:mm",
-              },
-            },
-            {
-              title: "Nom",
-              field: "nom",
+              title: "Credit R",
+              field: "creditR",
               editor: "list",
               editorParams: {
                 values: clients,
@@ -332,46 +328,7 @@
                 freetext: true,
               },
             },
-            {
-              title: "VHCL",
-              field: "car_code",
-              editor: "list",
-              editorParams: {
-                values: cars,
-                autocomplete: "true",
-                allowEmpty: true,
-                listOnEmpty: true,
-                valuesLookup: true,
-                freetext: true,
-              },
-            },
-            {
-              title: "Date d'entrer",
-              headerHozAlign: "center",
-              field: "date_entree",
-              editor: "datetime",
-              width: 200,
-              editorParams: {
-                format: "dd/MM/yyyy 🕖 HH:mm",
-              },
-            },
-            {
-              title: "Prix",
-              field: "prix",
-              editor: true,
-              formatter: "money",
-              formatterParams: {
-                precision: 2,
-              },
-              mutateLink: "montant",
-            },
-            ,
-            {
-              title: "Jr",
-              field: "n_jr",
-              editor: true,
-              mutateLink: "montant",
-            },
+
             {
               title: "Montant",
               field: "montant",
@@ -379,85 +336,20 @@
               formatterParams: {
                 precision: 2,
               },
-              mutator: function (value, data) {
-                return data.prix * data.n_jr;
-              },
               bottomCalc: "sum",
               bottomCalcParams: {
                 precision: 2,
               },
-              mutateLink: "credit",
             },
+
             {
-              title: "Caisse",
-              field: "caisse",
-              bottomCalc: "sum",
-              bottomCalcParams: {
-                precision: 2,
-              },
-              editor: true,
-              formatter: "money",
-              formatterParams: {
-                precision: 2,
-              },
-              mutateLink: "credit",
-            },
-            {
-              title: "Credit",
-              field: "credit",
-              mutator: function (value, data) {
-                return data.montant - data.caisse;
-              },
-              bottomCalc: "sum",
-              bottomCalcParams: {
-                precision: 2,
-              },
-              formatter: function (cell, formatterParams) {
-                var value = cell.getValue();
-                if (value != 0) {
-                  cell.getElement().style.backgroundColor = "#de9d9d";
-                }
-                var formattedValue = value.toLocaleString(undefined, {
-                  minimumFractionDigits: formatterParams.precision || 2,
-                  maximumFractionDigits: formatterParams.precision || 2,
-                });
-                return formattedValue;
-              },
-              /* cellEdited: function(cell) {
-                var value = cell.getValue();
-                if (value != 0) {
-                cell.getElement().style.backgroundColor = "#de9d9d";
-                } else {
-                // Handle the case where the value is empty
-                cell.getElement().style.backgroundColor = ""; // Reset to default
-                }
-                },*/
-            },
-            {
-              title: "Observation",
-              field: "observation",
-              editor: true,
+              title: "Date De Credit",
+              field: "date_credit",
+              sorter: true,
+              editor: "date",
+              formatter: "datetime",
             },
           ],
-          rowFormatter: function (row) {
-            var rowData = row.getData();
-            switch (rowData.status) {
-              case "Meknes":
-                row.getElement().style.backgroundColor = "#a9d2f0";
-                break;
-              case "A retourner":
-                row.getElement().style.backgroundColor = "white";
-                break;
-              case "En circullation":
-                row.getElement().style.backgroundColor = "#bfd834";
-                break;
-              case "Incident":
-                row.getElement().style.backgroundColor = "#ffc06e";
-                break;
-              default:
-                row.getElement().style.backgroundColor = "white";
-            }
-          },
         });
 
         table.on("cellEdited", async function (cell) {
@@ -509,7 +401,6 @@
 
         async function getReservationsByDate(month, year) {
           let reservations = await window.api.getReservations(month, year);
-          title.innerHTML = numericMonthToName(month) + " " + year;
           table.replaceData(reservations);
         }
 
@@ -541,6 +432,113 @@
             displayedYear.innerHTML = event.target.dataset.year;
             selectedYear = event.target.dataset.year;
           });
+        });
+
+        //Non payed Table
+
+        let table2 = new Tabulator("#table2", {
+          index: "id",
+          data: nonPayed,
+          layout: "fitDataStretch",
+          rowFormatterPrint: false, //disable standard formatter when printing
+          columns: [
+            {
+              title: "Tel",
+              field: "tel",
+              sorter: false,
+            },
+            {
+              title: "Sortie",
+              headerHozAlign: "center",
+              field: "date_sortie",
+              width: 200,
+            },
+            {
+              title: "Nom",
+              field: "nom",
+            },
+            {
+              title: "VHCL",
+              field: "car_code",
+            },
+            {
+              title: "Date d'entrer",
+              headerHozAlign: "center",
+              field: "date_entree",
+              width: 200,
+            },
+            {
+              title: "Prix",
+              field: "prix",
+              formatter: "money",
+              formatterParams: {
+                precision: 2,
+              },
+            },
+            ,
+            {
+              title: "Jr",
+              field: "n_jr",
+            },
+            {
+              title: "Montant",
+              field: "montant",
+              formatter: "money",
+              formatterParams: {
+                precision: 2,
+              },
+            },
+            {
+              title: "Caisse",
+              field: "caisse",
+              formatter: "money",
+              formatterParams: {
+                precision: 2,
+              },
+            },
+            {
+              title: "Credit",
+              field: "credit",
+              bottomCalc: "sum",
+              bottomCalcParams: {
+                precision: 2,
+              },
+              formatter: function (cell, formatterParams) {
+                var value = cell.getValue();
+                if (value != 0) {
+                  cell.getElement().style.backgroundColor = "#de9d9d";
+                }
+                var formattedValue = value.toLocaleString(undefined, {
+                  minimumFractionDigits: formatterParams.precision || 2,
+                  maximumFractionDigits: formatterParams.precision || 2,
+                });
+                return formattedValue;
+              },
+            },
+            {
+              title: "Observation",
+              field: "observation",
+            },
+          ],
+          rowFormatter: function (row) {
+            var rowData = row.getData();
+            switch (rowData.status) {
+              case "Meknes":
+                row.getElement().style.backgroundColor = "#a9d2f0";
+                break;
+              case "A retourner":
+                row.getElement().style.backgroundColor = "white";
+                break;
+              case "En circullation":
+                row.getElement().style.backgroundColor = "#bfd834";
+                break;
+              case "Incident":
+                row.getElement().style.backgroundColor = "#ffc06e";
+                break;
+              default:
+                row.getElement().style.backgroundColor = "white";
+            }
+          },
         });
       });
     </script>

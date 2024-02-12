@@ -28,6 +28,18 @@ CREATE  TABLE IF NOT EXISTS  reservations (
     credit REAL DEFAULT 0,
     observation TEXT,
     status TEXT,
+    payed INTEGER DEFAULT 0,
 	FOREIGN KEY (idclient) REFERENCES clients(idclient),  
 	FOREIGN KEY (id_vhcl) REFERENCES cars(id_vhcl)
+);
+
+CREATE TABLE IF NOT EXISTS credits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date_payment TEXT,
+    creditR INTEGER,
+    montant REAL DEFAULT 0,
+    date_credit TEXT, 
+
+    FOREIGN KEY (creditR) REFERENCES clients(idclient)
+ 
 );
