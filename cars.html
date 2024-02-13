@@ -28,7 +28,7 @@
                         <a class="nav-link" href="#">Charges</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link">Credits</a>
+                        <a class="nav-link" href="credits.html">Credits</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
                         <a class="nav-link">Avances</a>
@@ -87,7 +87,7 @@
 
             // Tabulator
             let marques = ['toyota', 'ford', 'fiat', 'mercedes'];
-            
+
             let years = [];
 
             for (let i = 1990; i <= 2050; i++) {
@@ -118,11 +118,27 @@
                 title: "Model",
                 field: "model",
                 editor: "list",
+                formatter: "number",
                 editorParams: {
                     values: years
                 },
                 mutateLink: 'fin_de_circulation'
             },
+            /*{
+                title: "code",
+                field: "code",
+                formatter: function (cell, formatterParams, onRendered) {
+
+                    const firstLetter = cell.getValue().marque.charAt(0);
+
+                    const number = cell.getValue().immatricule;
+                    const lastLetterIndex = number.lastIndexOf(number.match(/[A-Za-z]/));
+                    const lastTwoLetters = lastLetterIndex >= 2 ? number.substring(lastLetterIndex - 2, lastLetterIndex) : number.substring(0, lastLetterIndex);
+
+                    console.log(firstLetter + lastTwoLetters);
+                    return firstLetter + lastTwoLetters;
+                },
+            },*/
             {
                 title: "La Visite",
                 field: "la_visite",
@@ -151,6 +167,16 @@
                 editor: 'list',
                 editorParams: {
                     values: MainLeveeOptions
+                },
+                formatter: function (cell) {
+                    if (cell.getValue() == 'disponible') {
+                        cell.getElement().style.backgroundColor = '#a9d2f0';
+                        console.log(cell.getValue());
+                    } else {
+                        cell.getElement().style.backgroundColor = 'white';
+                        console.log(cell.getValue());
+                    }
+
                 }
             },
             {
@@ -185,10 +211,19 @@
             },
 
             ];
+            var rowMenu = [
+                {
+                    label: "<i class='fas fa-trash'></i> Delete Row",
+                    action: function (e, row) {
+                        row.delete();
+                    },
+                },
+            ];
 
 
             var table = new Tabulator("#table", {
                 data: cars,
+                index: "id_vhcl",
                 columns: columns,
                 layout: "fitColumns",
                 responsiveLayout: "hide",
@@ -196,7 +231,8 @@
                 addRowPos: "bottom",
                 history: true,
                 virtualDom: true,
-                height: "300px"
+                height: "300px",
+                rowContextMenu: rowMenu,
             });
 
 
@@ -205,14 +241,24 @@
                 try {
                     const response = await window.api.storeCars(); // Call the storeReservations function from the preload script
                     console.log(response);
-                    row.update({ id: response });
+                    row.update({ id_vhcl: response });
                 } catch (error) {
                     console.error("Error storing cars:", error);
                 }
             });
-            table.on("rowUpdated", async function (row) {
+            table.on("cellEdited", async function (cell) {
+                console.log("cell edited");
+                console.log(cell.getRow().getData().id_vhcl);
+                let updatedData = {
+                    [cell.getField()]: cell.getValue(),
+                };
+                console.log(updatedData);
                 try {
-                    const response = await window.api.updateCars(row.getData()); // Call the storeReservations function from the preload script
+                    const response = await window.api.updateCars(
+                        cell.getRow().getData().id_vhcl,
+                        cell.getField(),
+                        cell.getValue(),
+                    );
                     console.log(response);
                 } catch (error) {
                     console.error("Error updating cars:", error);
@@ -220,7 +266,8 @@
             });
             table.on("rowDeleted", async function (row) {
                 try {
-                    const response = await window.api.deleteCars(row.getData()); // Call the storeReservations function from the preload script
+                    console.log(row.getData().id_vhcl);
+                    const response = await window.api.deleteCars(row.getData().id_vhcl); // Call the storeReservations function from the preload script
                     console.log(response);
                 } catch (error) {
                     console.error("Error deleting cars:", error);
