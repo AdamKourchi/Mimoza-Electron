@@ -75,7 +75,7 @@
     <div class="px-4 mt-5">
       <h1 class="mt-4">Crédits non payés :</h1>
     </div>
-    <div id="table2" class="container-fluid"></div>
+    <div id="table2" class="container-fluid mb-5"></div>
 
     <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
       <ul class="nav nav-underline" data-bs-theme="dark">
@@ -167,7 +167,6 @@
         const index = parseInt(numericMonth, 10) - 1;
         return months[index];
       }
-
       //title
       const title = document.querySelector(".breadcrumb-item");
 
@@ -194,145 +193,86 @@
           .getElementById("addRow")
           .addEventListener("click", function () {
             table.addRow({
-              caisse: 0,
-              credit: 0,
-              prix: 0,
-              n_jr: 0,
+              date_payment: "",
+              creditR: "",
               montant: 0,
+              date_credit: "",
             });
           });
 
         var rowMenu = [
           {
-            label:
-              "<span style='color: #a9d2f0; background-color: #a9d2f0; padding: 0px; border-radius: 0px;'>□</span>Meknes",
+            label: "<i class='fas fa-trash'></i> Delete Row",
             action: function (e, row) {
-              window.api.updateReservations(
-                row.getData().id,
-                "status",
-                "Meknes"
-              );
-              row.getElement().style.backgroundColor = "#a9d2f0";
+              row.delete();
             },
-          },
-          {
-            label:
-              "<span style='color:#000000; background-color:#FFFFFF; padding:0px; border-radius: 0px;'>□</span>A retourner",
-            action: function (e, row) {
-              window.api.updateReservations(
-                row.getData().id,
-                "status",
-                "A retourner"
-              );
-
-              row.getElement().style.backgroundColor = "white";
-            },
-          },
-          {
-            label:
-              "<span style='color:#bfd834; background-color: #bfd834; padding: 0px; border-radius: 0px;'>□</span> En circullation ",
-            action: function (e, row) {
-              window.api.updateReservations(
-                row.getData().id,
-                "status",
-                "En circullation"
-              );
-              row.getElement().style.backgroundColor = "#bfd834";
-            },
-          },
-
-          {
-            label:
-              "<span style='color:#ffc06e; background-color: #ffc06e; padding: 0px; border-radius: 0px;'>□</span>Incident ",
-            action: function (e, row) {
-              window.api.updateReservations(
-                row.getData().id,
-                "status",
-                "Incident"
-              );
-              row.getElement().style.backgroundColor = "#ffc06e";
-            },
-          },
-
-          {
-            separator: true,
-          },
-          {
-            label: "Admin Functions",
-            menu: [
-              {
-                label: "<i class='fas fa-trash'></i> Delete Row",
-                action: function (e, row) {
-                  row.delete();
-                },
-              },
-              {
-                label: "<i class='fas fa-ban'></i> Disabled Option",
-                disabled: true,
-              },
-            ],
           },
         ];
 
-        let cars = [
-          "F09",
-          "F10",
-          "F11",
-          "F12",
-          "F13",
-          "F14",
-          "F15",
-          "F16",
-          "F17",
-          "F18",
-          "F19",
-        ];
-        //random list of clients names for testing
-        let clients = [
-          "Oli Bob",
-          "Mary May",
-          "Christine Lobowski",
-          "Brendon Philips",
-          "Margret Marmajuke",
-          "Frank Harbours",
-          "Jamie Newhart",
-          "Gavin Joyce",
-          "John Doe",
-          "Mary Jane",
-        ];
+        let clients = nonPayed.map((credit) => {
+          return credit.nom;
+        });
+
+        let creditsDates = nonPayed.map((credit) => {
+          return credit.date_sortie.split(" ")[0];
+        });
 
         let table = new Tabulator("#table", {
           index: "id",
           data: credits,
           layout: "fitDataStretch",
-          rowContextMenu: rowMenu, //add context menu to rows
           rowFormatterPrint: false, //disable standard formatter when printing
+          rowContextMenu: rowMenu,
           columns: [
             {
               title: "Date payment",
               field: "date_payment",
               sorter: true,
               editor: "date",
-              formatter: "datetime",
+              width: 200,
+              editorParams: {
+                format: "dd/MM/yyyy",
+              },
+              editable: function (cell) {
+                if (
+                  cell.getRow().getData().date_credit &&
+                  cell.getRow().getData().montant &&
+                  cell.getRow().getData().date_payment &&
+                  cell.getRow().getData().nom
+                ) {
+                  return false;
+                }
+                return true;
+              },
             },
             {
               title: "Credit R",
-              field: "creditR",
+              field: "nom",
               editor: "list",
               editorParams: {
                 values: clients,
                 autocomplete: "true",
                 allowEmpty: true,
                 listOnEmpty: true,
-                valuesLookup: true,
                 freetext: true,
               },
+              editable: function (cell) {
+                if (
+                  cell.getRow().getData().date_credit &&
+                  cell.getRow().getData().montant &&
+                  cell.getRow().getData().date_payment &&
+                  cell.getRow().getData().nom
+                ) {
+                  return false;
+                }
+                return true;
+              },
             },
-
             {
               title: "Montant",
               field: "montant",
               formatter: "money",
+              editor: true,
               formatterParams: {
                 precision: 2,
               },
@@ -340,14 +280,42 @@
               bottomCalcParams: {
                 precision: 2,
               },
+              editable: function (cell) {
+                if (
+                  cell.getRow().getData().date_credit &&
+                  cell.getRow().getData().montant &&
+                  cell.getRow().getData().date_payment &&
+                  cell.getRow().getData().nom
+                ) {
+                  return false;
+                }
+                return true;
+              },
             },
-
             {
               title: "Date De Credit",
               field: "date_credit",
               sorter: true,
-              editor: "date",
-              formatter: "datetime",
+              editor: "list",
+              editorParams: {
+                values: creditsDates,
+                autocomplete: "true",
+                allowEmpty: true,
+                listOnEmpty: true,
+                valuesLookup: true,
+                freetext: true,
+              },
+              editable: function (cell) {
+                if (
+                  cell.getRow().getData().date_credit &&
+                  cell.getRow().getData().montant &&
+                  cell.getRow().getData().date_payment &&
+                  cell.getRow().getData().nom
+                ) {
+                  return false;
+                }
+                return true;
+              },
             },
           ],
         });
@@ -358,21 +326,22 @@
             [cell.getField()]: cell.getValue(),
           };
           console.log(updatedData);
+
           try {
-            const response = await window.api.updateReservations(
+            const response = await window.api.updateCredits(
               cell.getRow().getData().id,
               cell.getField(),
               cell.getValue(),
-              cell.getRow().getData().nom,
-              cell.getRow().getData().tel
+              cell.getRow().getData().date_credit,
+              cell.getRow().getData().montant,
+              cell.getRow().getData().idclient,
+              cell.getRow().getData().date_payment
             );
             console.log(response);
-            response.nom
-              ? cell.getRow().update({
-                  nom: response.nom,
-                  tel: response.tel,
-                })
+            response.idclient
+              ? cell.getRow().update({ idclient: response.idclient })
               : null;
+            let nonPayed = await getCreditsByDate(selectedMonth, selectedYear);
           } catch (error) {
             console.error("Error updating reservations:", error);
           }
@@ -380,28 +349,56 @@
 
         table.on("rowAdded", async function (row) {
           try {
-            const response = await window.api.storeReservations(); // Call the storeReservations function from the preload script
+            const response = await window.api.storeCredits(); // Call the storeReservations function from the preload script
             console.log(response);
             row.update({
               id: response.id,
-              date_sortie: response.date_sortie,
-              date_entree: response.date_entree,
+              date_payment: response.date_payment,
             });
           } catch (error) {
             console.error("Error storing reservations:", error);
           }
         });
 
-        table.on("rowDeleted", function (row) {
-          window.api.deleteReservations(row.getData().id);
-          console.log("row deleted");
+        table.on("rowDeleted", async function (row) {
+          try {
+            const response = await window.api.deleteCredits(
+              row.getData().id,
+              row.getData().date_credit,
+              row.getData().montant,
+              row.getData().idclient,
+              row.getData().date_payment
+            );
+            let nonPayed = await window.api.getNonPayed(
+              monthString,
+              yearString
+            );
+            table2.replaceData(nonPayed);
+            console.log("row deleted");
+          } catch (error) {
+            console.error("Error updating reservations:", error);
+          }
         });
 
         // Function to get reservations by date
 
-        async function getReservationsByDate(month, year) {
-          let reservations = await window.api.getReservations(month, year);
-          table.replaceData(reservations);
+        async function getCreditsByDate(month, year) {
+          let credits = await window.api.getCredits(month, year);
+          let nonPayed = await window.api.getNonPayed(month, year);
+          let clients = nonPayed.map((credit) => {
+            return credit.nom;
+          });
+          let creditsDates = nonPayed.map((credit) => {
+            return credit.date_sortie.split(" ")[0];
+          });
+          table.replaceData(credits);
+          table2.replaceData(nonPayed);
+          table.updateColumnDefinition("nom", {
+            editorParams: { values: clients },
+          });
+          table.updateColumnDefinition("date_credit", {
+            editorParams: { values: creditsDates },
+          });
         }
 
         // Add event listeners to the months links in Footer
@@ -410,7 +407,7 @@
           link.addEventListener("click", function (event) {
             event.preventDefault();
             console.log(event.target.dataset.month);
-            getReservationsByDate(event.target.dataset.month, selectedYear);
+            getCreditsByDate(event.target.dataset.month, selectedYear);
             event.target.classList.add("active");
             monthsLinks.forEach(function (link) {
               if (link !== event.target) {
@@ -428,14 +425,13 @@
           link.addEventListener("click", function (event) {
             event.preventDefault();
             console.log(event.target.dataset.year);
-            getReservationsByDate(selectedMonth, event.target.dataset.year);
+            getCreditsByDate(selectedMonth, event.target.dataset.year);
             displayedYear.innerHTML = event.target.dataset.year;
             selectedYear = event.target.dataset.year;
           });
         });
 
         //Non payed Table
-
         let table2 = new Tabulator("#table2", {
           index: "id",
           data: nonPayed,

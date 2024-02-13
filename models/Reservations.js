@@ -3,26 +3,26 @@ let db = dbmgr.db;
 
 exports.getReservations = function (month, year) {
   const stmt = db.prepare(`
-    SELECT *, clients.nom, clients.tel 
-    FROM reservations 
-    LEFT JOIN clients ON reservations.idclient = clients.idclient
-    WHERE date_sortie LIKE '__/${month}/${year} %';
+  SELECT *, clients.nom, clients.tel 
+  FROM reservations 
+  LEFT JOIN clients ON reservations.idclient = clients.idclient
+  WHERE date_sortie LIKE '__/${month}/${year}%'
   `);
 
-  return stmt.all();
+  return stmt.all({ month, year });
 };
 
 exports.storeReservations = () => {
   const stmt = db.prepare(
-    `INSERT INTO reservations (date_sortie,date_entree) VALUES (strftime('%d/%m/%Y 🕖 %H:%M', 'now','localtime'),strftime('%d/%m/%Y 🕖 %H:%M', 'now','localtime'))`
+    `INSERT INTO reservations (date_sortie) VALUES (strftime('%d/%m/%Y 🕖 %H:%M', 'now', 'localtime'))`
   );
   const info = stmt.run();
-  const insertedRowId = info.lastInsertRowid;
-  const insertedRow = db
-    .prepare("SELECT * FROM reservations WHERE rowid = ?")
-    .get(insertedRowId);
 
-  return insertedRow;
+  const insertedRes = db
+    .prepare("SELECT * FROM reservations WHERE id = ?")
+    .get(info.lastInsertRowid);
+
+  return insertedRes;
 };
 
 exports.updateReservations = (id, field, value, nom, tel) => {
