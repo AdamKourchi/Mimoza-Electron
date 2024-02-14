@@ -391,6 +391,7 @@
         async function getCreditsByDate(month, year) {
           let credits = await window.api.getCredits(month, year);
           let nonPayed = await window.api.getNonPayed(month, year);
+          title.innerHTML = numericMonthToName(month) + " " + year;
           let clients = nonPayed
             .map((res) => res.nom) // Extract the 'nom' property from each reservation
             .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
