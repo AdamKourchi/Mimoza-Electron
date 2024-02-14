@@ -4,6 +4,7 @@ const path = require("node:path");
 if (require('electron-squirrel-startup')) app.quit();
 
 function createWindow() {
+  
   const mainWindow = new BrowserWindow({
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),

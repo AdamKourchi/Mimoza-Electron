@@ -239,7 +239,7 @@
 
             table.on("rowAdded", async function (row) {
                 try {
-                    const response = await window.api.storeCars(); // Call the storeReservations function from the preload script
+                    const response = await window.api.storeCars(); 
                     console.log(response);
                     row.update({ id_vhcl: response });
                 } catch (error) {

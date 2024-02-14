@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS charges (
     date_charge TEXT,
     observation TEXT,
     prix REAL,
+    type_charge TEXT,
     id_vhcl INTEGER,
     
     FOREIGN KEY (id_vhcl) REFERENCES cars(id_vhcl)

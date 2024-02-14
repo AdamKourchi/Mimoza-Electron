@@ -6,6 +6,7 @@
     <title>Mimoza</title>
     <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
     <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./fontawesome/css/all.css">
 </head>
 
 <body>
@@ -25,13 +26,13 @@
                         <a class="nav-link" href="cars.html">Park</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link active" href="#">Charges</a>
+                        <a class="nav-link active" href="charges.html">Charges</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link " href="#">Crédits</a>
+                        <a class="nav-link " href="credits.html">Crédits</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link">Avances</a>
+                        <a class="nav-link" href="Avances.html">Avances</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
                         <a class="nav-link">Clients</a>
@@ -55,6 +56,9 @@
     </div>
 
     <div id="table" class="container-fluid"></div>
+    <br>
+    <br>
+
     <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
         <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
     </div>
@@ -118,6 +122,8 @@
     <script src="public/tab/dist/js/tabulator.js"></script>
 
     <script>
+        //console.log(navigator.language)
+
         var currentYear = new Date().getFullYear();
         var currentMonth = new Date().getMonth() + 1;
         var monthNames = [
@@ -129,7 +135,120 @@
         var currentDate = document.getElementById("currentDate");
         currentDate.innerHTML = currentMonthName + " " + currentYear;
 
-    
+        document.addEventListener("DOMContentLoaded", function () {
+            let charges = window.api.getCharges();
+            console.log(charges);
+
+            document.getElementById("addRow").addEventListener("click", function () {
+                table.addRow({
+                    date_charge: "",
+                    observation: "",
+                    prix: "",
+                });
+            });
+            var rowMenu = [
+                {
+                    label: "<i class='fas fa-trash'></i> Delete Row",
+                    action: function (e, row) {
+                        row.delete();
+                    },
+                },
+            ];
+            var table = new Tabulator("#table", {
+                columnCalcs: "both",
+
+                data: charges,
+                index: "id",
+                layout: "fitColumns",
+                virtualDom: true,
+            
+                rowContextMenu: rowMenu,
+                groupBy: "observation",
+                groupClosedShowCalcs: true,
+                columns: [
+                    {
+                        title: "Date", field: "date_charge", editor: "date", formatter: function (cell, formatterParams, onRendered) {
+                            var inputDateString = cell.getValue();
+
+                            var isValidDate = !isNaN(Date.parse(inputDateString));
+
+                            if (isValidDate) {
+                                var inputDate = new Date(inputDateString);
+                                var formattedDate = `${inputDate.getDate().toString().padStart(2, '0')}/${(inputDate.getMonth() + 1).toString().padStart(2, '0')}/${inputDate.getFullYear()}`;
+                                return formattedDate;
+                            } else {
+                                return "";
+                            }
+                        }
+                    },
+                    { title: "Charges", field: "observation", editor: "input" },
+                    {
+                        title: "Prix", field: "prix", editor: "input",
+                        bottomCalc: "sum",
+                        bottomCalcFormatter: function (cell) {
+                            console.log(cell);
+                            cell.getElement().style.color = "red";
+                            return cell.getValue();
+                        },
+                        bottomCalcParams: {
+                            precision: 2,
+
+
+                        }
+
+
+
+
+                    },
+
+                ],
+            });
+
+
+            table.on("rowAdded", async function (row) {
+                try {
+                    const response = await window.api.storeCharges();
+                    console.log(response);
+                    row.update({ id: response });
+                } catch (error) {
+                    console.error("Error storing charges:", error);
+                }
+            });
+            table.on("cellEdited", async function (cell) {
+                console.log("cell edited");
+                console.log(cell.getRow().getData().id);
+                let updatedData = {
+                    [cell.getField()]: cell.getValue(),
+                };
+                console.log(updatedData);
+                try {
+                    const response = await window.api.updateCharges(
+                        cell.getRow().getData().id,
+                        cell.getField(),
+                        cell.getValue(),
+                    );
+                    console.log(response);
+                } catch (error) {
+                    console.error("Error updating charges:", error);
+                }
+            });
+            table.on("rowDeleted", async function (row) {
+                try {
+                    const response = await window.api.deleteCharges(row.getData().id); // Call the deleteReservations function from the preload script
+                    console.log(response);
+                } catch (error) {
+                    console.error("Error deleting charges:", error);
+                }
+            });
+
+        });
+
+
+
+
+
+
+
 
 
 
