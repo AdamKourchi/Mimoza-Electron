@@ -25,13 +25,13 @@
                         <a class="nav-link active" href="#">Park</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link" href="#">Charges</a>
+                        <a class="nav-link" href="charges.html">Charges</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
                         <a class="nav-link" href="credits.html">Credits</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link">Avances</a>
+                        <a class="nav-link" href="Avances.html">Avances</a>
                     </li>
                     <li class="nav-item d-flex align-items-center">
                         <a class="nav-link">Clients</a>
@@ -86,7 +86,7 @@
             document.getElementById('currentYear').innerHTML = currentYear;
 
             // Tabulator
-            let marques = ['toyota', 'ford', 'fiat', 'mercedes'];
+            let marques = ['toyota', 'ford', 'fiat', 'mercedes', 'PEUGOT 208'];
 
             let years = [];
 
@@ -94,7 +94,7 @@
                 years.push(i);
             }
 
-            let factureOptions = ['disponible', 'non disponiple'];
+            let factureOptions = ['disponible', 'non disponible'];
 
             let MainLeveeOptions = ['disponible', 'en credit'];
 
@@ -124,21 +124,21 @@
                 },
                 mutateLink: 'fin_de_circulation'
             },
-            /*{
-                title: "code",
+            //set up code field to be the first letter of marque field and the last 2 numbers of the immatricule before the letter and removing spaces
+            {
+                title: "Code",
                 field: "code",
-                formatter: function (cell, formatterParams, onRendered) {
-
-                    const firstLetter = cell.getValue().marque.charAt(0);
-
-                    const number = cell.getValue().immatricule;
-                    const lastLetterIndex = number.lastIndexOf(number.match(/[A-Za-z]/));
-                    const lastTwoLetters = lastLetterIndex >= 2 ? number.substring(lastLetterIndex - 2, lastLetterIndex) : number.substring(0, lastLetterIndex);
-
-                    console.log(firstLetter + lastTwoLetters);
-                    return firstLetter + lastTwoLetters;
-                },
-            },*/
+                sorter: "string",
+                mutator: function (value, data) {
+                    let immatricule = data.immatricule;
+                    let marque = data.marque;
+                    if (marque !== null && marque !== undefined && marque.length > 0) {
+                        let code = marque.charAt(0) + immatricule.slice(3,5);
+                        console.log(code);
+                        return code.replace(/\s/g, '');
+                    }
+                }
+            },
             {
                 title: "La Visite",
                 field: "la_visite",
@@ -171,10 +171,10 @@
                 formatter: function (cell) {
                     if (cell.getValue() == 'disponible') {
                         cell.getElement().style.backgroundColor = '#a9d2f0';
-                        console.log(cell.getValue());
+                        return cell.getValue();
                     } else {
                         cell.getElement().style.backgroundColor = 'white';
-                        console.log(cell.getValue());
+                        return cell.getValue();
                     }
 
                 }
@@ -186,6 +186,16 @@
                 editor: "list",
                 editorParams: {
                     values: factureOptions
+                },
+                formatter: function (cell) {
+                    if (cell.getValue() == 'disponible') {
+                        cell.getElement().style.backgroundColor = '#a9d2f0';
+                        return cell.getValue();
+                    } else {
+                        cell.getElement().style.backgroundColor = 'white';
+                        return cell.getValue();
+                    }
+
                 }
             },
             {
@@ -239,7 +249,7 @@
 
             table.on("rowAdded", async function (row) {
                 try {
-                    const response = await window.api.storeCars(); 
+                    const response = await window.api.storeCars();
                     console.log(response);
                     row.update({ id_vhcl: response });
                 } catch (error) {

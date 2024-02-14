@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require("electron/main");
 const path = require("node:path");
 
-if (require('electron-squirrel-startup')) app.quit();
+if (require("electron-squirrel-startup")) app.quit();
 
 function createWindow() {
   
@@ -10,6 +10,9 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
     },
+    icon: path.join(__dirname, "assets/icon"),
+    minWidth: 910,
+    minHeight: 500,
   });
 
   mainWindow.loadFile("index.html");
@@ -18,8 +21,7 @@ function createWindow() {
   mainWindow.webContents.openDevTools();
 }
 
-app.whenReady().then(() => {const sqlite = require("sqlite-electron");
-
+app.whenReady().then(() => {
   createWindow();
 
   app.on("activate", function () {
@@ -30,4 +32,3 @@ app.whenReady().then(() => {const sqlite = require("sqlite-electron");
 app.on("window-all-closed", function () {
   if (process.platform !== "darwin") app.quit();
 });
-

@@ -1,12 +1,11 @@
 let dbmgr = require("./dbmgr.js");
 let db = dbmgr.db;
 
-exports.getCharges = function () {
+exports.getCharges = function (month, year) {
     const stmt = db.prepare(`
-    SELECT * FROM charges;
+    SELECT * FROM charges WHERE date_charge LIKE '${year}-${month}-%';
     `);
-    console.log(stmt.all());
-    return stmt.all();
+    return stmt.all({ month, year });
 }
 
 

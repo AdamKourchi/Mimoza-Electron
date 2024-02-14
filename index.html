@@ -42,7 +42,7 @@
               <a class="nav-link" href="credits.html">Crédits</a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link">Avances</a>
+              <a class="nav-link" href="Avances.html">Avances</a>
             </li>
             <li class="nav-item d-flex align-items-center">
               <a class="nav-link">Clients</a>
@@ -282,26 +282,19 @@
           "F18",
           "F19",
         ];
-        //random list of clients names for testing
-        let clients = [
-          "Oli Bob",
-          "Mary May",
-          "Christine Lobowski",
-          "Brendon Philips",
-          "Margret Marmajuke",
-          "Frank Harbours",
-          "Jamie Newhart",
-          "Gavin Joyce",
-          "John Doe",
-          "Mary Jane",
-        ];
+
+        let clients = reservations
+          .map((res) => res.nom) // Extract the 'nom' property from each reservation
+          .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
+          .filter((value, index, self) => self.indexOf(value) === index); // Filter out duplicate values
 
         let table = new Tabulator("#table", {
           index: "id",
           data: reservations,
           layout: "fitDataStretch",
           rowContextMenu: rowMenu, //add context menu to rows
-          rowFormatterPrint: false, //disable standard formatter when printing
+          height:"500px",
+
           columns: [
             {
               title: "Tel",
@@ -328,7 +321,6 @@
                 autocomplete: "true",
                 allowEmpty: true,
                 listOnEmpty: true,
-                valuesLookup: true,
                 freetext: true,
               },
             },
@@ -363,13 +355,21 @@
               formatterParams: {
                 precision: 2,
               },
+              editor: "number",
+              editorParams: {
+                min: 0,
+                step: 10,
+              },
               mutateLink: "montant",
             },
             ,
             {
               title: "Jr",
               field: "n_jr",
-              editor: true,
+              editor: "number",
+              editorParams: {
+                min: 0,
+              },
               mutateLink: "montant",
             },
             {
@@ -395,10 +395,14 @@
               bottomCalcParams: {
                 precision: 2,
               },
-              editor: true,
               formatter: "money",
               formatterParams: {
                 precision: 2,
+              },
+              editor: "number",
+              editorParams: {
+                min: 0,
+                step: 10,
               },
               mutateLink: "credit",
             },
@@ -529,7 +533,7 @@
             selectedMonth = event.target.dataset.month;
           });
         });
-
+        // Add event listeners to the years links in Footer
         const yearLinks = document.querySelectorAll(
           ".dropdown-menu.dropdown-menu-dark a"
         );

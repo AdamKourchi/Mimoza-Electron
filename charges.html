@@ -51,7 +51,7 @@
     <div class="px-4">
         <h1 class="mt-4">Charges :</h1>
         <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item fs-3 active"><span id="currentDate"></span></li>
+            <li class="breadcrumb-item fs-3 active"></li>
         </ol>
     </div>
 
@@ -122,22 +122,53 @@
     <script src="public/tab/dist/js/tabulator.js"></script>
 
     <script>
-        //console.log(navigator.language)
+        const currentDate = new Date();
+        const localMonth = currentDate.getMonth() + 1;
+        const localYear = currentDate.getFullYear();
 
-        var currentYear = new Date().getFullYear();
-        var currentMonth = new Date().getMonth() + 1;
-        var monthNames = [
-            "janvier", "février", "mars", "avril", "mai", "juin",
-            "juillet", "août", "septembre", "octobre", "novembre", "décembre"
-        ];
-        var currentMonthName = monthNames[currentMonth - 1];
+        const monthString =
+            localMonth < 10 ? "0" + localMonth : localMonth.toString();
+        const yearString = localYear.toString();
 
-        var currentDate = document.getElementById("currentDate");
-        currentDate.innerHTML = currentMonthName + " " + currentYear;
+        function numericMonthToName(numericMonth) {
+            const months = [
+                "Janvier",
+                "Février",
+                "Mars",
+                "Avril",
+                "Mai",
+                "Juin",
+                "Juillet",
+                "Août",
+                "Septembre",
+                "Octobre",
+                "Novembre",
+                "Décembre",
+            ];
+            const index = parseInt(numericMonth, 10) - 1;
+            return months[index];
+        }
+
+        //title
+        const title = document.querySelector(".breadcrumb-item");
 
         document.addEventListener("DOMContentLoaded", function () {
-            let charges = window.api.getCharges();
+            let charges = window.api.getCharges(monthString, yearString);
             console.log(charges);
+            console.log(monthString, yearString);
+
+            title.innerHTML = numericMonthToName(monthString) + " " + yearString;
+            console.log(charges);
+            //Making the current month active
+            const activeMonth = document.querySelector(
+                `a[data-month="${monthString}"]`
+            );
+            activeMonth.classList.add("active");
+            let selectedMonth = monthString;
+            let selectedYear = yearString;
+            // Display the selected year in the dropdown
+            const displayedYear = document.querySelector(".dropdown-toggle");
+            displayedYear.innerHTML = yearString;
 
             document.getElementById("addRow").addEventListener("click", function () {
                 table.addRow({
@@ -156,30 +187,19 @@
             ];
             var table = new Tabulator("#table", {
                 columnCalcs: "both",
-
                 data: charges,
                 index: "id",
                 layout: "fitColumns",
                 virtualDom: true,
-            
                 rowContextMenu: rowMenu,
                 groupBy: "observation",
                 groupClosedShowCalcs: true,
+                
                 columns: [
                     {
-                        title: "Date", field: "date_charge", editor: "date", formatter: function (cell, formatterParams, onRendered) {
-                            var inputDateString = cell.getValue();
-
-                            var isValidDate = !isNaN(Date.parse(inputDateString));
-
-                            if (isValidDate) {
-                                var inputDate = new Date(inputDateString);
-                                var formattedDate = `${inputDate.getDate().toString().padStart(2, '0')}/${(inputDate.getMonth() + 1).toString().padStart(2, '0')}/${inputDate.getFullYear()}`;
-                                return formattedDate;
-                            } else {
-                                return "";
-                            }
-                        }
+                        title: "Date", field: "date_charge", editor: "date", editorParams: {
+                            format: "dd/MM/yyyy",
+                        },
                     },
                     { title: "Charges", field: "observation", editor: "input" },
                     {
@@ -195,10 +215,6 @@
 
 
                         }
-
-
-
-
                     },
 
                 ],
@@ -240,6 +256,43 @@
                     console.error("Error deleting charges:", error);
                 }
             });
+            //get charges by date
+            async function getChargesByDate(month, year) {
+                let charges = await window.api.getCharges(month, year);
+                title.innerHTML = numericMonthToName(month) + " " + year;
+                table.replaceData(charges);
+            }
+
+            // Add event listeners to the months links in Footer
+            const monthsLinks = document.querySelectorAll(".nav-item.footer a");
+            monthsLinks.forEach(function (link) {
+                link.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    console.log(event.target.dataset.month);
+                    getChargesByDate(event.target.dataset.month, selectedYear);
+                    event.target.classList.add("active");
+                    monthsLinks.forEach(function (link) {
+                        if (link !== event.target) {
+                            link.classList.remove("active");
+                        }
+                    });
+                    selectedMonth = event.target.dataset.month;
+                });
+            });
+            // Add event listeners to the years links in Footer
+            const yearLinks = document.querySelectorAll(
+                ".dropdown-menu.dropdown-menu-dark a"
+            );
+            yearLinks.forEach(function (link) {
+                link.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    console.log(event.target.dataset.year);
+                    getChargesByDate(selectedMonth, event.target.dataset.year);
+                    displayedYear.innerHTML = event.target.dataset.year;
+                    selectedYear = event.target.dataset.year;
+                });
+            });
+
 
         });
 
