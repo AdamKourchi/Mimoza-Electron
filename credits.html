@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>Mimoza</title>
-    <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
     <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
   </head>
 
   <body>
@@ -209,13 +209,15 @@
           },
         ];
 
-        let clients = nonPayed.map((credit) => {
-          return credit.nom;
-        });
+        let clients = nonPayed
+          .map((client) => client.nom) // Extract the 'nom' property from each reservation
+          .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
+          .filter((value, index, self) => self.indexOf(value) === index); // Filter out duplicate values
 
-        let creditsDates = nonPayed.map((credit) => {
-          return credit.date_sortie.split(" ")[0];
-        });
+        let creditsDates = nonPayed
+          .map((credit) => credit.date_sortie.split(" ")[0]) // Extract the date part from each credit's date_sortie
+          .filter((date, index, self) => self.indexOf(date) === index) // Filter out duplicate dates
+          .filter((date) => date !== null && date !== undefined && date !== ""); // Filter out null, undefined, and empty values
 
         let table = new Tabulator("#table", {
           index: "id",
@@ -272,7 +274,11 @@
               title: "Montant",
               field: "montant",
               formatter: "money",
-              editor: true,
+              editor: "number",
+              editorParams: {
+                min: 0,
+                step: 10,
+              },
               formatterParams: {
                 precision: 2,
               },
@@ -385,12 +391,18 @@
         async function getCreditsByDate(month, year) {
           let credits = await window.api.getCredits(month, year);
           let nonPayed = await window.api.getNonPayed(month, year);
-          let clients = nonPayed.map((credit) => {
-            return credit.nom;
-          });
-          let creditsDates = nonPayed.map((credit) => {
-            return credit.date_sortie.split(" ")[0];
-          });
+          let clients = nonPayed
+            .map((res) => res.nom) // Extract the 'nom' property from each reservation
+            .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
+            .filter((value, index, self) => self.indexOf(value) === index); // Filter out duplicate values
+
+          let creditsDates = nonPayed
+            .map((credit) => credit.date_sortie.split(" ")[0]) // Extract the date part from each credit's date_sortie
+            .filter((date, index, self) => self.indexOf(date) === index) // Filter out duplicate dates
+            .filter(
+              (date) => date !== null && date !== undefined && date !== ""
+            ); // Filter out null, undefined, and empty values
+
           table.replaceData(credits);
           table2.replaceData(nonPayed);
           table.updateColumnDefinition("nom", {
