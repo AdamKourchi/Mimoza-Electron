@@ -10,6 +10,7 @@ exports.getReservations = function (month, year) {
   WHERE date_sortie LIKE '__/${month}/${year}%'
   `);
 
+  console.log("DB", stmt.all({ month, year }));
   return stmt.all({ month, year });
 };
 
@@ -90,27 +91,27 @@ exports.updateReservations = (id, field, value, nom, tel) => {
       }
     }
   }
-if(field === "code"){
-  const stmt = db.prepare(
-    `SELECT cars.code, cars.id_vhcl FROM cars WHERE code = $value`
-  );
-  const selectResult = stmt.get({ value });
-  if (selectResult) {
-    const stmt2 = db.prepare(
-      `UPDATE reservations SET id_vhcl = $id_vhcl WHERE id = $id`
+  if (field === "code") {
+    const stmt = db.prepare(
+      `SELECT cars.code, cars.id_vhcl FROM cars WHERE code = $value`
     );
-    stmt2.run({ id_vhcl: selectResult.id_vhcl, id });
-    return selectResult;
+    const selectResult = stmt.get({ value });
+    if (selectResult) {
+      const stmt2 = db.prepare(
+        `UPDATE reservations SET id_vhcl = $id_vhcl WHERE id = $id`
+      );
+      stmt2.run({ id_vhcl: selectResult.id_vhcl, id });
+      return selectResult;
+    }
+    const stmt2 = db.prepare(`INSERT INTO cars (code) VALUES ($value)`);
+    const insertResult = stmt2.run({ value });
+    const newCarId = insertResult.lastInsertRowid;
+    const stmt3 = db.prepare(
+      `UPDATE reservations SET id_vhcl = $newCarId WHERE id = $id`
+    );
+    const result = stmt3.run({ newCarId, id });
+    return result;
   }
-  const stmt2 = db.prepare(`INSERT INTO cars (code) VALUES ($value)`);
-  const insertResult = stmt2.run({ value });
-  const newCarId = insertResult.lastInsertRowid;
-  const stmt3 = db.prepare(
-    `UPDATE reservations SET id_vhcl = $newCarId WHERE id = $id`
-  );
-  const result = stmt3.run({ newCarId, id });
-  return result;
-}
 
   // For other fields, update the reservation directly
   const stmt5 = db.prepare(
@@ -125,4 +126,3 @@ exports.deleteReservations = (id) => {
   const result = stmt.run({ id });
   return result;
 };
-

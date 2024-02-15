@@ -6,10 +6,11 @@ const path = require("node:path");
 //C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/mimoza.db
 //C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/migration/migration.sql
 //Linux
-///home/adam/Desktop/CurrentProjects/Mimoza-Electron/migration/migration.sql
-///home/adam/Desktop/CurrentProjects/Mimoza-Electron/mimoza.db
-const DB_PATH = "C:/Users/aaa/Desktop/Mimoza-Code/models/db/mimoza.db"
-const MIGRATIONS_DIR = "C:/Users/aaa/Desktop/Mimoza-Code/models/migration/migration.sql"
+// /home/adam/Desktop/CurrentProjects/Mimoza-Electron/models/migration/migration.sql
+// /home/adam/Desktop/CurrentProjects/Mimoza-Electron/models/db/mimoza.db
+const DB_PATH = "/home/adam/Desktop/CurrentProjects/Mimoza-Electron/models/db/mimoza.db";
+const MIGRATIONS_DIR =
+  "/home/adam/Desktop/CurrentProjects/Mimoza-Electron/models/migration/migration.sql";
 // Function to apply migrations
 function applyMigrations() {
   const db = new Database(DB_PATH, { verbose: console.log });

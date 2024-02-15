@@ -295,6 +295,7 @@
           .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
           .filter((value, index, self) => self.indexOf(value) === index); // Filter out duplicate values
 
+        console.log(reservations);
         let table = new Tabulator("#table", {
           index: "id",
           data: reservations,
