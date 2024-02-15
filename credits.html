@@ -5,71 +5,89 @@
     <title>Mimoza</title>
     <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
     <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="assets/style.css" />
   </head>
 
   <body>
     <nav
-      class="navbar navbar-expand-lg bg-dark sticky-top"
-      data-bs-theme="dark"
-    >
-      <div class="container-fluid">
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarTogglerDemo03"
-          aria-controls="navbarTogglerDemo03"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
-        </button>
-        <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" aria-current="page" href="index.html"
-                >Reservations</a
-              >
-            </li>
-            <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="#">Charges</a>
-            </li>
-            <li class="nav-item d-flex align-items-center">
-              <a class="nav-link active" href="#">Crédits</a>
-            </li>
-            <li class="nav-item d-flex align-items-center">
-              <a class="nav-link">Avances</a>
-            </li>
-            <li class="nav-item d-flex align-items-center">
-              <a class="nav-link">Clients</a>
-            </li>
-          </ul>
-          <form class="d-flex align-items-center" role="search">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <li class="nav-item"></li>
-
-            <button class="btn btn-success" type="submit">Search</button>
-          </form>
-        </div>
+    class="navbar navbar-expand-sm bg-dark sticky-top"
+    data-bs-theme="dark"
+  >
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarTogglerDemo03"
+        aria-controls="navbarTogglerDemo03"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
+      </button>
+      <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" aria-current="page" href="index.html"
+              ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
+              Reservations |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="#"
+              ><i
+                class="fa-solid fa-comment-dollar"
+                style="color: #ffffff"
+              ></i>
+              Charges |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link active" href="#">
+              <i class="fa-solid fa-coins" style="color: #ffffff"></i>
+              Crédits |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link">
+              <i
+                class="fa-solid fa-hand-holding-dollar"
+                style="color: #ffffff"
+              ></i>
+              Avances |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="#">
+              <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
+              Park |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="clients.html">
+              <i class="fa-solid fa-person" style="color: #ffffff"></i>
+              Clients |
+            </a>
+          </li>
+        </ul>
+        <form class="d-flex align-items-center" role="search">
+          <span class="text-white" id="navbarList"></span>
+        </form>
       </div>
-    </nav>
-
+    </div>
+  </nav>
     <div class="px-4">
       <h1 class="mt-4">Crédits :</h1>
       <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item fs-3 active">October 2023</li>
+        <li class="breadcrumb-item fs-3 active"></li>
       </ol>
     </div>
 
     <div id="table" class="container-fluid"></div>
     <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
-      <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
+      <button id="addRow" class="btn btn-success">+ Ajouter</button>
     </div>
 
     <div class="px-4 mt-5">
@@ -135,7 +153,6 @@
       </div>
     </div>
 
-    <script src="public/jquery/dist/jquery.js"></script>
     <script src="public/popper.js"></script>
     <script src="public/bootstrap/dist/js/bootstrap.js"></script>
     <script src="public/luxon.js"></script>
@@ -222,8 +239,7 @@
         let table = new Tabulator("#table", {
           index: "id",
           data: credits,
-          layout: "fitDataStretch",
-          rowFormatterPrint: false, //disable standard formatter when printing
+          layout: "fitColumns",
           rowContextMenu: rowMenu,
           columns: [
             {
@@ -279,13 +295,8 @@
                 min: 0,
                 step: 10,
               },
-              formatterParams: {
-                precision: 2,
-              },
               bottomCalc: "sum",
-              bottomCalcParams: {
-                precision: 2,
-              },
+              bottomCalcFormatter: "money",
               editable: function (cell) {
                 if (
                   cell.getRow().getData().date_credit &&
@@ -480,9 +491,6 @@
               title: "Prix",
               field: "prix",
               formatter: "money",
-              formatterParams: {
-                precision: 2,
-              },
             },
             ,
             {
@@ -493,25 +501,17 @@
               title: "Montant",
               field: "montant",
               formatter: "money",
-              formatterParams: {
-                precision: 2,
-              },
             },
             {
               title: "Caisse",
               field: "caisse",
               formatter: "money",
-              formatterParams: {
-                precision: 2,
-              },
             },
             {
               title: "Credit",
               field: "credit",
               bottomCalc: "sum",
-              bottomCalcParams: {
-                precision: 2,
-              },
+              bottomCalcFormatter: "money",
               formatter: function (cell, formatterParams) {
                 var value = cell.getValue();
                 if (value != 0) {
@@ -545,11 +545,58 @@
                 row.getElement().style.backgroundColor = "#ffc06e";
                 break;
               default:
-                row.getElement().style.backgroundColor = "white";
+                break;
             }
           },
         });
+     
+     
+     
+     
+     
+     //Islamic Duaa
+     const strings = [
+          "اللهم اهدنا",
+          "اللهم اغفر لي",
+          "رب اغفر وارحم",
+          "رب اشرح لي صدري",
+          "ربنا آتنا في الدنيا حسنة",
+          "رب اغفر لي وارحمني",
+          "اللهم إني أعوذ بك من العجز والكسل",
+          "اللهم اجعل لساني عامرا بذكرك",
+          "ربنا لا تزغ قلوبنا",
+        ];
+
+        function updateNavbar() {
+          const navbarList = document.getElementById("navbarList");
+          navbarList.innerHTML = "";
+          const randomString =
+            strings[Math.floor(Math.random() * strings.length)];
+
+          navbarList.textContent = randomString;
+        }
+
+        updateNavbar();
+
+        // Update navbar content every 10 minutes
+        setInterval(updateNavbar, 5 * 60 * 1000);
+     
+     
+     
+     
+     
+     
+     
+     
       });
-    </script>
+   
+   
+   
+   
+   
+   
+   
+   
+   </script>
   </body>
 </html>
