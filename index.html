@@ -36,7 +36,7 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="#"
+              <a class="nav-link" href="charges.html"
                 ><i
                   class="fa-solid fa-comment-dollar"
                   style="color: #ffffff"
@@ -52,7 +52,7 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link">
+              <a class="nav-link" href="#">
                 <i
                   class="fa-solid fa-hand-holding-dollar"
                   style="color: #ffffff"
@@ -61,7 +61,7 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="#">
+              <a class="nav-link" href="cars.html">
                 <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
                 Park |
               </a>
@@ -189,6 +189,9 @@
       document.addEventListener("DOMContentLoaded", function () {
         console.log(monthString, yearString);
         let reservations = window.api.getReservations(monthString, yearString);
+        let cars = window.api.getCarsCodes();
+        const cars_codes = cars.map((car) => car.code);
+        console.log(cars_codes);
         title.innerHTML = numericMonthToName(monthString) + " " + yearString;
         console.log(reservations);
         //Making the current month active
@@ -235,7 +238,7 @@
                 "A retourner"
               );
 
-              row.getElement().style.backgroundColor = "white";
+              row.getElement().style.backgroundColor = "";
             },
           },
           {
@@ -273,7 +276,7 @@
           },
         ];
 
-        let cars = [
+        /* let cars = [
           "F09",
           "F10",
           "F11",
@@ -285,7 +288,7 @@
           "F17",
           "F18",
           "F19",
-        ];
+        ];*/
 
         let clients = reservations
           .map((res) => res.nom) // Extract the 'nom' property from each reservation
@@ -293,7 +296,6 @@
           .filter((value, index, self) => self.indexOf(value) === index); // Filter out duplicate values
 
         let table = new Tabulator("#table", {
-          history: true,
           index: "id",
           data: reservations,
           layout: "fitDataStretch",
@@ -321,7 +323,7 @@
               editor: "list",
               editorParams: {
                 values: clients,
-                autocomplete: "true",
+                autocomplete: true,
                 allowEmpty: true,
                 listOnEmpty: true,
                 freetext: true,
@@ -329,10 +331,10 @@
             },
             {
               title: "VHCL",
-              field: "car_code",
+              field: "code",
               editor: "list",
               editorParams: {
-                values: cars,
+                values: cars_codes,
                 autocomplete: "true",
                 allowEmpty: true,
                 listOnEmpty: true,
@@ -519,7 +521,7 @@
             selectedMonth = event.target.dataset.month;
           });
         });
-
+        // Add event listeners to the years links in Footer
         const yearLinks = document.querySelectorAll(
           ".dropdown-menu.dropdown-menu-dark a"
         );

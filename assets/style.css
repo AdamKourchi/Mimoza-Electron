@@ -1,8 +1,8 @@
 @font-face {
   font-family: "Arabic";
-  src: url("assets/Scheherazade_New/ScheherazadeNew-Regular.ttf")
-    format("truetype");
+  src: url("Scheherazade_New/ScheherazadeNew-Regular.ttf") format("truetype");
 }
+
 
 #navbarList {
   font-family: "Arabic";

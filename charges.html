@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mimoza</title>
+    <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
+    <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+
+  <body>
+    <nav
+      class="navbar navbar-expand-sm bg-dark sticky-top"
+      data-bs-theme="dark"
+    >
+      <div class="container-fluid">
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarTogglerDemo03"
+          aria-controls="navbarTogglerDemo03"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
+        </button>
+        <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link" aria-current="page" href="index.html"
+                ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
+                Reservations |
+              </a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link active" href="#"
+                ><i
+                  class="fa-solid fa-comment-dollar"
+                  style="color: #ffffff"
+                ></i>
+                Charges |
+              </a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link" href="credits.html">
+                <i class="fa-solid fa-coins" style="color: #ffffff"></i>
+                Crédits |
+              </a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link">
+                <i
+                  class="fa-solid fa-hand-holding-dollar"
+                  style="color: #ffffff"
+                ></i>
+                Avances |
+              </a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link" href="cars.html">
+                <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
+                Park |
+              </a>
+            </li>
+            <li class="nav-item d-flex align-items-center">
+              <a class="nav-link" href="clients.html">
+                <i class="fa-solid fa-person" style="color: #ffffff"></i>
+                Clients |
+              </a>
+            </li>
+          </ul>
+          <form class="d-flex align-items-center" role="search">
+            <span class="text-white" id="navbarList"></span>
+          </form>
+        </div>
+      </div>
+    </nav>
+    <div class="px-4">
+      <h1 class="mt-4">Charges :</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item fs-3 active"></li>
+      </ol>
+    </div>
+
+    <div id="table" class="container-fluid"></div>
+    <br />
+    <br />
+
+    <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
+      <button id="addRow" class="btn btn-success">+ Ajouter</button>
+    </div>
+    <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
+      <ul class="nav nav-underline" data-bs-theme="dark">
+        <li class="nav-item footer">
+          <a data-month="01" class="nav-link" href="#">Janvier</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="02" class="nav-link" href="#">Février</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="03" class="nav-link" href="#">Mars</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="04" class="nav-link" href="#">Avril</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="05" class="nav-link" href="#">Mai</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="06" class="nav-link" href="#">Juin</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="07" class="nav-link" href="#">Juillet</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="08" class="nav-link" href="#">Août</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="09" class="nav-link" href="#">Septembre</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="10" class="nav-link" href="#">Octobre</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="11" class="nav-link" href="#">Novembre</a>
+        </li>
+        <li class="nav-item footer">
+          <a data-month="12" class="nav-link" href="#">Décembre</a>
+        </li>
+      </ul>
+
+      <div class="btn-group dropup">
+        <button
+          type="button"
+          class="btn btn-dark dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          2024
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark">
+          <li><a data-year="2026" class="dropdown-item" href="#">2026</a></li>
+          <li><a data-year="2025" class="dropdown-item" href="#">2025</a></li>
+          <li><a data-year="2024" class="dropdown-item" href="#">2024</a></li>
+          <li><a data-year="2023" class="dropdown-item" href="#">2023</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <script src="public/jquery/dist/jquery.js"></script>
+    <script src="public/popper.js"></script>
+    <script src="public/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="public/luxon.js"></script>
+    <script src="public/tab/dist/js/tabulator.js"></script>
+
+    <script>
+      const currentDate = new Date();
+      const localMonth = currentDate.getMonth() + 1;
+      const localYear = currentDate.getFullYear();
+
+      const monthString =
+        localMonth < 10 ? "0" + localMonth : localMonth.toString();
+      const yearString = localYear.toString();
+
+      function numericMonthToName(numericMonth) {
+        const months = [
+          "Janvier",
+          "Février",
+          "Mars",
+          "Avril",
+          "Mai",
+          "Juin",
+          "Juillet",
+          "Août",
+          "Septembre",
+          "Octobre",
+          "Novembre",
+          "Décembre",
+        ];
+        const index = parseInt(numericMonth, 10) - 1;
+        return months[index];
+      }
+
+      //title
+      const title = document.querySelector(".breadcrumb-item");
+
+      document.addEventListener("DOMContentLoaded", function () {
+        let charges = window.api.getCharges(monthString, yearString);
+        console.log(charges);
+        console.log(monthString, yearString);
+
+        title.innerHTML = numericMonthToName(monthString) + " " + yearString;
+        console.log(charges);
+        //Making the current month active
+        const activeMonth = document.querySelector(
+          `a[data-month="${monthString}"]`
+        );
+        activeMonth.classList.add("active");
+        let selectedMonth = monthString;
+        let selectedYear = yearString;
+        // Display the selected year in the dropdown
+        const displayedYear = document.querySelector(".dropdown-toggle");
+        displayedYear.innerHTML = yearString;
+
+        document
+          .getElementById("addRow")
+          .addEventListener("click", function () {
+            table.addRow({
+              date_charge: "",
+              observation: "",
+              prix: "",
+            });
+          });
+        var rowMenu = [
+          {
+            label: "🗑️ Supprimer la ligne",
+            action: function (e, row) {
+              row.delete();
+            },
+          },
+        ];
+        var table = new Tabulator("#table", {
+          columnCalcs: "both",
+          data: charges,
+          index: "id",
+          layout: "fitColumns",
+          virtualDom: true,
+          rowContextMenu: rowMenu,
+          groupBy: "type_charge",
+          groupClosedShowCalcs: true,
+
+          columns: [
+            {
+              title: "Type",
+              field: "type_charge",
+              editor: "list",
+              editor: "list",
+              editorParams: {
+                values: ["General", "Vidange", "Plaquet", "Pneu", "Visite"],
+                autocomplete: true,
+                allowEmpty: true,
+                listOnEmpty: true,
+                freetext: true,
+              },
+            },
+            {
+              title: "Date",
+              field: "date_charge",
+              editor: "date",
+              editorParams: {
+                format: "dd/MM/yyyy",
+              },
+            },
+            {
+              title: "Charges",
+              field: "observation",
+              editor: "input",
+            },
+
+            {
+              title: "Prix",
+              field: "prix",
+              editor: "input",
+              bottomCalc: "sum",
+              formatter: "money",
+              bottomCalcFormatter: function (cell, formatterParams) {
+                var value = cell.getValue();
+                cell.getElement().style.color = "red";
+
+                // Format options
+                var options = {
+                  minimumFractionDigits: formatterParams.precision || 2,
+                  maximumFractionDigits: formatterParams.precision || 2,
+                  useGrouping: true, // Enable grouping (thousands separator)
+                };
+
+                // Format the number using Intl.NumberFormat
+                var formattedValue = new Intl.NumberFormat(
+                  "en-US",
+                  options
+                ).format(value);
+                return formattedValue;
+              },
+
+              bottomCalcParams: {
+                precision: 2,
+              },
+            },
+          ],
+        });
+
+        table.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeCharges();
+            console.log(response);
+            row.update({
+              id: response.id,
+              date_charge: response.date_charge,
+              observation: response.observation,
+              prix: response.prix,
+              type_charge: response.type_charge,
+            });
+          } catch (error) {
+            console.error("Error storing charges:", error);
+          }
+        });
+        table.on("cellEdited", async function (cell) {
+          try {
+            const response = await window.api.updateCharges(
+              cell.getRow().getData().id,
+              cell.getField(),
+              cell.getValue()
+            );
+            console.log(response);
+          } catch (error) {
+            console.error("Error updating charges:", error);
+          }
+        });
+        table.on("rowDeleted", async function (row) {
+          try {
+            const response = await window.api.deleteCharges(row.getData().id); // Call the deleteReservations function from the preload script
+            console.log(response);
+          } catch (error) {
+            console.error("Error deleting charges:", error);
+          }
+        });
+        //get charges by date
+        async function getChargesByDate(month, year) {
+          let charges = await window.api.getCharges(month, year);
+          title.innerHTML = numericMonthToName(month) + " " + year;
+          table.replaceData(charges);
+        }
+
+        // Add event listeners to the months links in Footer
+        const monthsLinks = document.querySelectorAll(".nav-item.footer a");
+        monthsLinks.forEach(function (link) {
+          link.addEventListener("click", function (event) {
+            event.preventDefault();
+            console.log(event.target.dataset.month);
+            getChargesByDate(event.target.dataset.month, selectedYear);
+            event.target.classList.add("active");
+            monthsLinks.forEach(function (link) {
+              if (link !== event.target) {
+                link.classList.remove("active");
+              }
+            });
+            selectedMonth = event.target.dataset.month;
+          });
+        });
+        // Add event listeners to the years links in Footer
+        const yearLinks = document.querySelectorAll(
+          ".dropdown-menu.dropdown-menu-dark a"
+        );
+        yearLinks.forEach(function (link) {
+          link.addEventListener("click", function (event) {
+            event.preventDefault();
+            console.log(event.target.dataset.year);
+            getChargesByDate(selectedMonth, event.target.dataset.year);
+            displayedYear.innerHTML = event.target.dataset.year;
+            selectedYear = event.target.dataset.year;
+          });
+        });
+     
+           //Islamic Duaa
+           const strings = [
+          "اللهم اهدنا",
+          "اللهم اغفر لي",
+          "رب اغفر وارحم",
+          "رب اشرح لي صدري",
+          "ربنا آتنا في الدنيا حسنة",
+          "رب اغفر لي وارحمني",
+          "اللهم إني أعوذ بك من العجز والكسل",
+          "اللهم اجعل لساني عامرا بذكرك",
+          "ربنا لا تزغ قلوبنا",
+        ];
+
+        function updateNavbar() {
+          const navbarList = document.getElementById("navbarList");
+          navbarList.innerHTML = "";
+          const randomString =
+            strings[Math.floor(Math.random() * strings.length)];
+
+          navbarList.textContent = randomString;
+        }
+
+        updateNavbar();
+
+        // Update navbar content every 10 minutes
+        setInterval(updateNavbar, 5 * 60 * 1000);
+     
+     
+     
+     
+     
+     
+     
+     
+     
+      });
+    </script>
+  </body>
+</html>

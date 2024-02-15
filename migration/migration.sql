@@ -1,13 +1,14 @@
 CREATE TABLE IF NOT EXISTS cars (
     id_vhcl INTEGER PRIMARY KEY AUTOINCREMENT,
     marque TEXT,
-    imt TEXT,
+    immatricule TEXT,
+    model INTEGER,
     code TEXT,
-    fin_circ TEXT,
-    visite TEXT,
-    mainlevee INTEGER DEFAULT 0,
-    facture_achat INTEGER DEFAULT 0,
-    prix_achat REAL
+    la_visite TEXT,
+    fin_de_circulation TEXT,
+    mainlevee TEXT DEFAULT "EN CREDIT",
+    facture_achat TEXT DEFAULT "NON DISPONIBLE",
+    prix REAL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS clients 
 (
@@ -43,3 +44,23 @@ CREATE TABLE IF NOT EXISTS credits (
     FOREIGN KEY (creditR) REFERENCES clients(idclient)
  
 );
+CREATE TABLE IF NOT EXISTS charges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date_charge TEXT,
+    observation TEXT,
+    prix REAL DEFAULT 0,
+    type_charge TEXT DEFAULT "General",
+    id_vhcl INTEGER,
+    
+    FOREIGN KEY (id_vhcl) REFERENCES cars(id_vhcl)
+);
+CREATE TABLE IF NOT EXISTS avances (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date_avance TEXT,
+    observation TEXT,
+    montant REAL,
+    type_avance TEXT,
+    idclient INTEGER,
+    
+    FOREIGN KEY (idclient) REFERENCES clients(idclient)
+)

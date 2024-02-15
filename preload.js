@@ -1,6 +1,8 @@
 const { contextBridge, ipcRenderer } = require("electron");
 const Reservations = require("./models/Reservations.js");
+const Cars = require("./models/Cars.js");
 const Credits = require("./models/Credits.js");
+const Charges = require("./models/Charges.js");
 const Clients = require("./models/Clients.js");
 
 contextBridge.exposeInMainWorld("api", {
@@ -10,15 +12,26 @@ contextBridge.exposeInMainWorld("api", {
   updateReservations: (id, field, value, nom, tel) =>
     Reservations.updateReservations(id, field, value, nom, tel),
   deleteReservations: (id) => Reservations.deleteReservations(id),
-//Credits
+  //Cars
+  getCars: () => Cars.getCars(),
+  storeCars: () => Cars.storeCars(),
+  updateCars: (id, field, value) => Cars.updateCars(id, field, value),
+  deleteCars: (id) => Cars.deleteCars(id),
+  getCarsCodes: () => Cars.getCarsCodes(),
+  //Credits
   getCredits: (month, year) => Credits.getCredits(month, year),
   getNonPayed: (month, year) => Credits.getNonPayed(month, year),
   storeCredits: () => Credits.storeCredits(),
-  updateCredits: (id, field, value,date,montant,client,dateP) => Credits.updateCredits(id, field, value,date,montant,client,dateP),
- deleteCredits: (id,date, montant, client,dateP) => Credits.deleteCredits(id,date, montant, client,dateP),
-//Clients
-getClients: () => Clients.getClients(),
-updateClient: (id,field, value) => Clients.updateClient(id,field, value),
-
-
+  updateCredits: (id, field, value, date, montant, client, dateP) =>
+    Credits.updateCredits(id, field, value, date, montant, client, dateP),
+  deleteCredits: (id, date, montant, client, dateP) =>
+    Credits.deleteCredits(id, date, montant, client, dateP),
+  //Charges
+  getCharges: (month, year) => Charges.getCharges(month, year),
+  storeCharges: () => Charges.storeCharges(),
+  updateCharges: (id, field, value) => Charges.updateCharges(id, field, value),
+  deleteCharges: (id) => Charges.deleteCharges(id),
+  //Clients
+  getClients: () => Clients.getClients(),
+  updateClient: (id, field, value) => Clients.updateClient(id, field, value),
 });
