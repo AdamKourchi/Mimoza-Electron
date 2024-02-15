@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="assets/style.css" />
   </head>
 
-  <body>
+  <body class="bg-body-secondary">
     <nav
       class="navbar navbar-expand-sm bg-dark sticky-top"
       data-bs-theme="dark"
@@ -26,7 +26,13 @@
         >
           <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
         </button>
-        <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
+        <a class="navbar-brand" href="#"
+          ><img
+            src="./assets/logo.svg"
+            width="100px"
+            class="d-none d-xl-block"
+          />
+        </a>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item d-flex align-items-center">
@@ -47,11 +53,12 @@
             <li class="nav-item d-flex align-items-center">
               <a class="nav-link" href="credits.html">
                 <i class="fa-solid fa-coins" style="color: #ffffff"></i>
+
                 Crédits |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link">
+              <a class="nav-link" href="#">
                 <i
                   class="fa-solid fa-hand-holding-dollar"
                   style="color: #ffffff"
@@ -72,12 +79,14 @@
               </a>
             </li>
           </ul>
-          <form class="d-flex align-items-center" role="search">
-            <span class="text-white" id="navbarList"></span>
-          </form>
+          <span class="text-white" id="navbarList"></span>
+          <a href="infos.html"
+            ><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i
+          ></a>
         </div>
       </div>
     </nav>
+
     <div class="px-4">
       <h1 class="mt-4">Charges :</h1>
       <ol class="breadcrumb mb-4">
@@ -85,9 +94,10 @@
       </ol>
     </div>
 
-    <div id="table" class="container-fluid"></div>
-    <br />
-    <br />
+    <hr />
+    <div class="container-fluid shadow">
+      <div id="table"></div>
+    </div>
 
     <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
       <button id="addRow" class="btn btn-success">+ Ajouter</button>
@@ -150,7 +160,6 @@
       </div>
     </div>
 
-    <script src="public/jquery/dist/jquery.js"></script>
     <script src="public/popper.js"></script>
     <script src="public/bootstrap/dist/js/bootstrap.js"></script>
     <script src="public/luxon.js"></script>
@@ -363,9 +372,9 @@
             selectedYear = event.target.dataset.year;
           });
         });
-     
-           //Islamic Duaa
-           const strings = [
+
+        //Islamic Duaa
+        const strings = [
           "اللهم اهدنا",
           "اللهم اغفر لي",
           "رب اغفر وارحم",
@@ -390,15 +399,6 @@
 
         // Update navbar content every 10 minutes
         setInterval(updateNavbar, 5 * 60 * 1000);
-     
-     
-     
-     
-     
-     
-     
-     
-     
       });
     </script>
   </body>
