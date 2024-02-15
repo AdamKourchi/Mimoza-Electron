@@ -9,9 +9,10 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
     },
-    icon: path.join(__dirname, "assets/icon.png"),
+    icon: path.join(__dirname, "assets/icon.ico"),
     minWidth: 910,
     minHeight: 500,
+    autoHideMenuBar: true,
   });
 
   mainWindow.loadFile("index.html");
