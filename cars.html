@@ -98,6 +98,7 @@
 
             let MainLeveeOptions = ['disponible', 'en credit'];
 
+            
 
             var columns = [{
                 title: "Marque",
@@ -156,8 +157,6 @@
                     finCirculationDate.setFullYear(ModelYear.getFullYear() + 5);
                     return finCirculationDate.toLocaleDateString();
 
-
-
                 }
 
             },
@@ -168,17 +167,17 @@
                 editorParams: {
                     values: MainLeveeOptions
                 },
-                formatter: function (cell) {
-                    if (cell.getValue() == 'disponible') {
-                        cell.getElement().style.backgroundColor = '#a9d2f0';
-                        console.log(cell.getValue());
-                    } else {
-                        cell.getElement().style.backgroundColor = 'white';
-                        console.log(cell.getValue());
-                    }
+                cellClick: function(e, cell) {
+        if (cell.getValue() === 'disponible') {
+            cell.getElement().style.backgroundColor = '#a9d2f0';
+        } else {
+            cell.getElement().style.backgroundColor = 'white';
+        }
+    }
+},
+            
+ 
 
-                }
-            },
             {
                 title: "Facture d'Achat",
                 field: "facture_achat",

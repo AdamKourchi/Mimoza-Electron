@@ -4,9 +4,9 @@ const Database = require("better-sqlite3");
 //C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/mimoza.db
 //C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/migration/migration.sql
 const DB_PATH =
-  "C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/mimoza.db";
+  "C:/Users/DELL/Documents/MimozaElectron/mimoza.db";
 const MIGRATIONS_DIR =
-  "C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/migration/migration.sql";
+  "C:/Users/DELL/Documents/MimozaElectron/migration/migration.sql";
 
 // Function to apply migrations
 function applyMigrations() {

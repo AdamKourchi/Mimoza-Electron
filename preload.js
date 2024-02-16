@@ -2,7 +2,7 @@ const { contextBridge,ipcRenderer } = require("electron");
 const Reservations = require("./models/Reservations.js");
 const Cars = require("./models/Cars.js");
 const Credits = require("./models/Credits.js");
-
+const Avances = require ("./models/Avances.js");
 contextBridge.exposeInMainWorld("api", {
   getReservations: (month,year) => Reservations.getReservations(month,year),
   storeReservations:() => Reservations.storeReservations(),
@@ -19,6 +19,11 @@ contextBridge.exposeInMainWorld("api", {
   getCredits: (month,year) => Credits.getCredits(month,year),
   getNonPayed: (month,year) => Credits.getNonPayed(month,year),
   storeCredits: () => Credits.storeCredits(),
+
+  getAvances: ()=> Avances.getAvances(),
+  storeAvances: () => Avances.storeAvances(),
+  updateAvances: (id, field,value) => Avances.updateAvances(id, field, value),
+  deleteAvances: (id) => Avances.deleteAvances(id),
 
 });
 

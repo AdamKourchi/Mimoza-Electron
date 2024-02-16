@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Mimoza</title>
+    <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
+    <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+</head>
+<style>
+    .tabulator-col-title { 
+        color: blue;
+        text-align: center;
+    }
+    
+</style>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-dark sticky-top" data-bs-theme="dark">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
+            </button>
+            <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link " aria-current="page" href="index.html">Reservations</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link " href="cars.html">Park</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link" href="charges.html">Charges</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link" href="credits.html">Credits</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link active">Avances</a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link">Clients</a>
+                    </li>
+                </ul>
+                <form class="d-flex align-items-center" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                    <li class="nav-item"></li>
+
+                    <button class="btn btn-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="px-4">
+        <h1 class="mt-4">Avances</h1>
+    </div>
+
+    <div id="table" class="container-fluid"></div>
+
+    <div class="container-fluid  d-flex justify-content-end mt-2 mb-5">
+        <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
+    </div>
+
+
+
+    <script src="public/jquery/dist/jquery.js"></script>
+    <script src="public/popper.js"></script>
+    <script src="public/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="public/luxon.js"></script>
+    <script src="public/tab/dist/js/tabulator.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let avances = window.api.getAvances();
+            console.log(avances);
+
+            document.getElementById('addRow').addEventListener('click', function () {
+                table.addRow({
+
+                });
+            });
+
+            // Tabulator
+            let types = ['VERSEMENT', 'ESPECE'];
+
+            var columns = [{
+                title: "Date",
+                field: "date_avance",
+                sorter: "number",
+                editor: "date",
+            },
+            {
+                title: "Versement",
+                field: "observation",
+                sorter: "string",
+                editor: "input"
+            },
+            {
+    title: "Type",
+    field: "type_avance ",
+    editor: "list",
+    editorParams: {
+        values: types
+    },
+    cellClick: function(e, cell) {
+        if (cell.getValue() === 'VERSEMENT') {
+            cell.getElement().style.backgroundColor = 'red';
+        } else {
+            cell.getElement().style.backgroundColor = 'yellow';
+        }
+    }
+},
+            
+            {
+                title: "Montant",
+                field: "montant",
+                sorter: "number",
+                editor: "input",
+                bottomCalc: "sum",
+                bottomCalcParams: {
+                    precision: 2,
+                }
+            }
+            ];
+            // Delete row function
+            var rowMenu = [
+                {
+                    label: "<i class='fas fa-trash'></i> Delete Row",
+                    action: function (e, row) {
+                        row.delete();
+                    },
+                },
+            ];
+            
+
+            var table = new Tabulator("#table", {
+                data: avances,
+                index: "id",
+                columns: columns,
+                layout: "fitColumns",
+                responsiveLayout: "hide",
+                tooltips: true,
+                addRowPos: "bottom",
+                history: true,
+                virtualDom: true,
+                height: "213px",
+                rowContextMenu: rowMenu,
+            });
+
+
+        });
+    </script>
+</body>
+
+</html>
