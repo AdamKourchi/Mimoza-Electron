@@ -1,293 +1,372 @@
 <!DOCTYPE html>
 <html lang="fr">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>Mimoza</title>
     <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
     <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
-</head>
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg bg-dark sticky-top" data-bs-theme="dark">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03"
-                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
-            </button>
-            <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link " aria-current="page" href="index.html">Reservations</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link active" href="#">Park</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link" href="charges.html">Charges</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link" href="credits.html">Credits</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link" href="Avances.html">Avances</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link">Clients</a>
-                    </li>
-                </ul>
-                <form class="d-flex align-items-center" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                    <li class="nav-item"></li>
+  <body class="bg-body-secondary">
+    <nav
+    class="navbar navbar-expand-sm bg-dark sticky-top"
+    data-bs-theme="dark"
+  >
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarTogglerDemo03"
+        aria-controls="navbarTogglerDemo03"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
+      </button>
+      <a class="navbar-brand" href="#"
+        ><img
+          src="./assets/logo.svg"
+          width="100px"
+          class="d-none d-xl-block"
+        />
+      </a>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" aria-current="page" href="index.html"
+              ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
+              Reservations |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="charges.html"
+              ><i
+                class="fa-solid fa-comment-dollar"
+                style="color: #ffffff"
+              ></i>
+              Charges |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="credits.html">
+              <i class="fa-solid fa-coins" style="color: #ffffff"></i>
 
-                    <button class="btn btn-success" type="submit">Search</button>
-                </form>
-            </div>
-        </div>
-    </nav>
+              Crédits |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="#">
+              <i
+                class="fa-solid fa-hand-holding-dollar"
+                style="color: #ffffff"
+              ></i>
+              Avances |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link active" href="#">
+              <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
+              Park |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="clients.html">
+              <i class="fa-solid fa-person" style="color: #ffffff"></i>
+              Clients |
+            </a>
+          </li>
+        </ul>
+        <span class="text-white" id="navbarList"></span>
+        <a href="infos.html"><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i></a>
+      </div>
+    </div>
+  </nav>
+
+
+
+
+
+
+
+
+
+
+
+
 
     <div class="px-4">
-        <h1 class="mt-4">Park Mimoza <span id="currentYear"></span></h1>
+      <h1 class="mt-4">Park Mimoza : <span id="currentYear"></span></h1>
     </div>
-
-    <div id="table" class="container-fluid"></div>
-
+<hr>
+    <div class="container-fluid shadow">
+      <div id="table"></div>
+    </div>
     <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
-        <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
+      <button id="addRow" class="btn btn-success">+ Ajouter</button>
     </div>
 
-
-
-    <script src="public/jquery/dist/jquery.js"></script>
     <script src="public/popper.js"></script>
     <script src="public/bootstrap/dist/js/bootstrap.js"></script>
     <script src="public/luxon.js"></script>
     <script src="public/tab/dist/js/tabulator.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let cars = window.api.getCars();
-            console.log(cars);
+      document.addEventListener("DOMContentLoaded", function () {
+        let cars = window.api.getCars();
+        console.log(cars);
 
-            document.getElementById('addRow').addEventListener('click', function () {
-                table.addRow({
-                    marque: "",
-                    immatricule: "",
-                    model: "",
-                    la_visite: "",
-                    fin_de_circulation: "",
-                    mainlevee: "",
-                    facture_achat: "",
-                    prix: ""
-                });
+        document
+          .getElementById("addRow")
+          .addEventListener("click", function () {
+            table.addRow({
+              marque: "",
+              immatricule: "",
+              model: "",
+              la_visite: "",
+              fin_de_circulation: "",
+              mainlevee: "",
+              facture_achat: "",
+              prix: "",
             });
-            // Set the current year
-            let currentYear = new Date().getFullYear();
-            document.getElementById('currentYear').innerHTML = currentYear;
+          });
+        // Set the current year
+        let currentYear = new Date().getFullYear();
+        document.getElementById("currentYear").innerHTML = currentYear;
 
-            // Tabulator
-            let marques = ['toyota', 'ford', 'fiat', 'mercedes', 'PEUGOT 208'];
+        // Tabulator
+        let marques = [
+          "FORD FIESTA",
+          "PARTNER",
+          "PEUGOT 208",
+          "PEUGEOT 308",
+          "CITROEN",
+        ];
 
-            let years = [];
+        let years = [];
 
-            for (let i = 1990; i <= 2050; i++) {
-                years.push(i);
-            }
+        for (let i = 2010; i <= 2040; i++) {
+          years.push(i);
+        }
 
-            let factureOptions = ['disponible', 'non disponible'];
+        let factureOptions = ["DISPONIBLE", "NON DISPONIBLE"];
+        let MainLeveeOptions = ["DISPONIBLE", "EN CREDIT"];
 
-            let MainLeveeOptions = ['disponible', 'en credit'];
+        var columns = [
+          {
+            title: "Marque",
+            field: "marque",
+            sorter: "string",
+            editor: "list",
 
-
-            var columns = [{
-                title: "Marque",
-                field: "marque",
-                sorter: "string",
-                editor: "list",
-                editorParams: {
-                    values: marques
+            editorParams: {
+              values: marques,
+              autocomplete: true,
+              allowEmpty: true,
+              listOnEmpty: true,
+              freetext: true,
+            },
+            mutateLink: "code",
+          },
+          {
+            title: "Immatricule",
+            field: "immatricule",
+            sorter: "string",
+            editor: "input",
+            mutateLink: "code",
+          },
+          {
+            title: "Model",
+            field: "model",
+            editor: "list",
+            formatter: "number",
+            editorParams: {
+              values: years,
+              autocomplete: true,
+              allowEmpty: true,
+              listOnEmpty: true,
+              freetext: true,
+            },
+          },
+          {
+            title: "Code",
+            field: "code",
+            editor: "input",
+            sorter: "string",
+            /* mutator: function (value, data) {
+              if (!value && data.immatricule && data.marque) {
+                let immatricule = data.immatricule;
+                let marque = data.marque;
+                if (
+                  marque !== null &&
+                  marque !== undefined &&
+                  marque.length > 0
+                ) {
+                  let code = marque.charAt(0) + immatricule.slice(3, 5);
+                  console.log(code);
+                  return code.replace(/\s/g, "");
                 }
+              }
+            },*/
+          },
+
+          {
+            title: "Fin de Circulation",
+            field: "fin_de_circulation",
+            editor: "date",
+            editorParams: {
+              format: "dd/MM/yyyy",
             },
-            {
-                title: "Immatricule",
-                field: "immatricule",
-                sorter: "string",
-                editor: "input"
+            width: 160,
+            /*    formatter: function (value, data) {
+              if (data.model) {
+                let ModelYear = new Date(data.model, 0);
+                let finCirculationDate = new Date(ModelYear);
+                finCirculationDate.setFullYear(ModelYear.getFullYear() + 5);
+                return finCirculationDate.toLocaleDateString();
+              }
+            },*/
+          },
+          {
+            title: "La Visite",
+            field: "la_visite",
+            sorter: "date",
+            width: 110,
+            editor: "date",
+            editorParams: {
+              format: "dd/MM/yyyy",
             },
-            {
-                title: "Model",
-                field: "model",
-                editor: "list",
-                formatter: "number",
-                editorParams: {
-                    values: years
-                },
-                mutateLink: 'fin_de_circulation'
+          },
+          {
+            title: "Mainlevee",
+            field: "mainlevee",
+            editor: "list",
+            editorParams: {
+              values: MainLeveeOptions,
             },
-            //set up code field to be the first letter of marque field and the last 2 numbers of the immatricule before the letter and removing spaces
-            {
-                title: "Code",
-                field: "code",
-                sorter: "string",
-                mutator: function (value, data) {
-                    let immatricule = data.immatricule;
-                    let marque = data.marque;
-                    if (marque !== null && marque !== undefined && marque.length > 0) {
-                        let code = marque.charAt(0) + immatricule.slice(3,5);
-                        console.log(code);
-                        return code.replace(/\s/g, '');
-                    }
-                }
+            formatter: function (cell) {
+              if (cell.getValue() == "DISPONIBLE") {
+                cell.getElement().style.backgroundColor = "#a9d2f0";
+                return cell.getValue();
+              } else {
+                cell.getElement().style.backgroundColor = "";
+                return cell.getValue();
+              }
             },
-            {
-                title: "La Visite",
-                field: "la_visite",
-                sorter: "date",
-                editor: "datetime",
-
+          },
+          {
+            title: "Facture d'Achat",
+            field: "facture_achat",
+            sorter: "string",
+            editor: "list",
+            editorParams: {
+              values: factureOptions,
             },
-            {
-                title: "Fin de Circulation",
-                field: "fin_de_circulation",
-                editor: "input",
-                mutator: function (value, data) {
-                    let ModelYear = new Date(data.model, 0);
-                    let finCirculationDate = new Date(ModelYear);
-                    finCirculationDate.setFullYear(ModelYear.getFullYear() + 5);
-                    return finCirculationDate.toLocaleDateString();
-
-
-
-                }
-
+            formatter: function (cell) {
+              if (cell.getValue() == "DISPONIBLE") {
+                cell.getElement().style.backgroundColor = "#a9d2f0";
+                return cell.getValue();
+              } else {
+                cell.getElement().style.backgroundColor = "";
+                return cell.getValue();
+              }
             },
-            {
-                title: "Mainlevee",
-                field: "mainlevee",
-                editor: 'list',
-                editorParams: {
-                    values: MainLeveeOptions
-                },
-                formatter: function (cell) {
-                    if (cell.getValue() == 'disponible') {
-                        cell.getElement().style.backgroundColor = '#a9d2f0';
-                        return cell.getValue();
-                    } else {
-                        cell.getElement().style.backgroundColor = 'white';
-                        return cell.getValue();
-                    }
-
-                }
+          },
+          {
+            title: "Prix",
+            field: "prix_achat",
+            sorter: "number",
+            align: "right",
+            formatter: "money",
+            editor: "number",
+            editorParams: {
+              step: 100,
             },
-            {
-                title: "Facture d'Achat",
-                field: "facture_achat",
-                sorter: "string",
-                editor: "list",
-                editorParams: {
-                    values: factureOptions
-                },
-                formatter: function (cell) {
-                    if (cell.getValue() == 'disponible') {
-                        cell.getElement().style.backgroundColor = '#a9d2f0';
-                        return cell.getValue();
-                    } else {
-                        cell.getElement().style.backgroundColor = 'white';
-                        return cell.getValue();
-                    }
+          },
+        ];
 
-                }
+        var rowMenu = [
+          {
+            label: "🗑️ Supprimer la ligne",
+            action: function (e, row) {
+              row.delete();
             },
-            {
-                title: "Prix",
-                field: "prix",
-                sorter: "number",
-                align: "right",
-                formatter: "money",
-                editor: "input"
-            },
-            ];
+          },
+        ];
 
-
-            var Parkdata = [{
-                marque: "",
-                immatricule: "",
-                model: "2005",
-                la_visite: "",
-                fin_de_circulation: "",
-                mainlevee: "",
-                facture_achat: "",
-                prix: ""
-            },
-
-            ];
-            var rowMenu = [
-                {
-                    label: "<i class='fas fa-trash'></i> Delete Row",
-                    action: function (e, row) {
-                        row.delete();
-                    },
-                },
-            ];
-
-
-            var table = new Tabulator("#table", {
-                data: cars,
-                index: "id_vhcl",
-                columns: columns,
-                layout: "fitColumns",
-                responsiveLayout: "hide",
-                tooltips: true,
-                addRowPos: "bottom",
-                history: true,
-                virtualDom: true,
-                height: "300px",
-                rowContextMenu: rowMenu,
-            });
-
-
-
-            table.on("rowAdded", async function (row) {
-                try {
-                    const response = await window.api.storeCars();
-                    console.log(response);
-                    row.update({ id_vhcl: response });
-                } catch (error) {
-                    console.error("Error storing cars:", error);
-                }
-            });
-            table.on("cellEdited", async function (cell) {
-                console.log("cell edited");
-                console.log(cell.getRow().getData().id_vhcl);
-                let updatedData = {
-                    [cell.getField()]: cell.getValue(),
-                };
-                console.log(updatedData);
-                try {
-                    const response = await window.api.updateCars(
-                        cell.getRow().getData().id_vhcl,
-                        cell.getField(),
-                        cell.getValue(),
-                    );
-                    console.log(response);
-                } catch (error) {
-                    console.error("Error updating cars:", error);
-                }
-            });
-            table.on("rowDeleted", async function (row) {
-                try {
-                    console.log(row.getData().id_vhcl);
-                    const response = await window.api.deleteCars(row.getData().id_vhcl); // Call the storeReservations function from the preload script
-                    console.log(response);
-                } catch (error) {
-                    console.error("Error deleting cars:", error);
-                }
-            });
-
-
-
+        var table = new Tabulator("#table", {
+          data: cars,
+          index: "id_vhcl",
+          columns: columns,
+          layout: "fitColumns",
+          rowContextMenu: rowMenu,
         });
-    </script>
-</body>
 
+        table.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeCars();
+            console.log(response);
+            row.update({ id_vhcl: response });
+          } catch (error) {
+            console.error("Error storing cars:", error);
+          }
+        });
+        table.on("cellEdited", async function (cell) {
+          console.log("cell edited");
+          console.log(cell.getRow().getData().id_vhcl);
+          let updatedData = {
+            [cell.getField()]: cell.getValue(),
+          };
+          console.log(updatedData);
+          try {
+            const response = await window.api.updateCars(
+              cell.getRow().getData().id_vhcl,
+              cell.getField(),
+              cell.getValue()
+            );
+            console.log(response);
+          } catch (error) {
+            console.error("Error updating cars:", error);
+          }
+        });
+        table.on("rowDeleted", async function (row) {
+          try {
+            console.log(row.getData().id_vhcl);
+            const response = await window.api.deleteCars(row.getData().id_vhcl); // Call the storeReservations function from the preload script
+            console.log(response);
+          } catch (error) {
+            console.error("Error deleting cars:", error);
+          }
+        });
+
+        //Islamic Duaa
+        const strings = [
+          "اللهم اهدنا",
+          "اللهم اغفر لي",
+          "رب اغفر وارحم",
+          "رب اشرح لي صدري",
+          "ربنا آتنا في الدنيا حسنة",
+          "رب اغفر لي وارحمني",
+          "اللهم إني أعوذ بك من العجز والكسل",
+          "اللهم اجعل لساني عامرا بذكرك",
+          "ربنا لا تزغ قلوبنا",
+        ];
+
+        function updateNavbar() {
+          const navbarList = document.getElementById("navbarList");
+          navbarList.innerHTML = "";
+          const randomString =
+            strings[Math.floor(Math.random() * strings.length)];
+
+          navbarList.textContent = randomString;
+        }
+
+        updateNavbar();
+
+        // Update navbar content every 10 minutes
+        setInterval(updateNavbar, 5 * 60 * 1000);
+      });
+    </script>
+  </body>
 </html>

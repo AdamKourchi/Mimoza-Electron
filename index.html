@@ -5,11 +5,14 @@
     <title>Mimoza</title>
     <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
     <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="assets/style.css" />
   </head>
 
-  <body>
+  <body class="bg-body-secondary">
+   
     <nav
-      class="navbar navbar-expand-lg bg-dark sticky-top"
+      class="navbar navbar-expand-sm bg-dark sticky-top"
       data-bs-theme="dark"
     >
       <div class="container-fluid">
@@ -24,56 +27,79 @@
         >
           <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
         </button>
-        <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
+        <a class="navbar-brand" href="#"
+          ><img
+            src="./assets/logo.svg"
+            width="100px"
+            class="d-none d-xl-block"
+          />
+        </a>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item d-flex align-items-center">
               <a class="nav-link active" aria-current="page" href="#"
-                >Reservations</a
-              >
+                ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
+                Reservations |
+              </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="cars.html">Park</a>
+              <a class="nav-link" href="charges.html"
+                ><i
+                  class="fa-solid fa-comment-dollar"
+                  style="color: #ffffff"
+                ></i>
+                Charges |
+              </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="charges.html">Charges</a>
+              <a class="nav-link" href="credits.html">
+                <i class="fa-solid fa-coins" style="color: #ffffff"></i>
+
+                Crédits |
+              </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="credits.html">Crédits</a>
+              <a class="nav-link" href="#">
+                <i
+                  class="fa-solid fa-hand-holding-dollar"
+                  style="color: #ffffff"
+                ></i>
+                Avances |
+              </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="Avances.html">Avances</a>
+              <a class="nav-link" href="cars.html">
+                <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
+                Park |
+              </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link">Clients</a>
+              <a class="nav-link" href="clients.html">
+                <i class="fa-solid fa-person" style="color: #ffffff"></i>
+                Clients |
+              </a>
             </li>
           </ul>
-          <form class="d-flex align-items-center" role="search">
-            <input
-              class="form-control me-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <li class="nav-item"></li>
-
-            <button class="btn btn-success" type="submit">Search</button>
-          </form>
+          <span class="text-white" id="navbarList"></span>
+          <a href="infos.html"><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i></a>
         </div>
       </div>
     </nav>
 
     <div class="px-4">
-      <h1 class="mt-4">Reservations</h1>
+      <h1 class="mt-4">Reservations :</h1>
       <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item fs-3 active">October 2023</li>
+        <li class="breadcrumb-item fs-3 active"></li>
       </ol>
     </div>
 
-    <div id="table" class="container-fluid"></div>
+    <hr />
+    <div class="container-fluid shadow">
+      <div id="table"></div>
+    </div>
 
     <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
-      <button id="addRow" class="btn btn-outline-success">+ Ajouter</button>
+      <button id="addRow" class="btn btn-success">+ Ajouter</button>
     </div>
     <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
       <ul class="nav nav-underline" data-bs-theme="dark">
@@ -133,7 +159,6 @@
       </div>
     </div>
 
-    <script src="public/jquery/dist/jquery.js"></script>
     <script src="public/popper.js"></script>
     <script src="public/bootstrap/dist/js/bootstrap.js"></script>
     <script src="public/luxon.js"></script>
@@ -172,6 +197,9 @@
       document.addEventListener("DOMContentLoaded", function () {
         console.log(monthString, yearString);
         let reservations = window.api.getReservations(monthString, yearString);
+        let cars = window.api.getCarsCodes();
+        const cars_codes = cars.map((car) => car.code);
+        console.log(cars_codes);
         title.innerHTML = numericMonthToName(monthString) + " " + yearString;
         console.log(reservations);
         //Making the current month active
@@ -199,8 +227,7 @@
 
         var rowMenu = [
           {
-            label:
-              "<span style='color: #a9d2f0; background-color: #a9d2f0; padding: 0px; border-radius: 0px;'>□</span>Meknes",
+            label: "🟦 Meknes",
             action: function (e, row) {
               window.api.updateReservations(
                 row.getData().id,
@@ -211,8 +238,7 @@
             },
           },
           {
-            label:
-              "<span style='color:#000000; background-color:#FFFFFF; padding:0px; border-radius: 0px;'>□</span>A retourner",
+            label: "⬜ A retourner",
             action: function (e, row) {
               window.api.updateReservations(
                 row.getData().id,
@@ -220,12 +246,11 @@
                 "A retourner"
               );
 
-              row.getElement().style.backgroundColor = "white";
+              row.getElement().style.backgroundColor = "";
             },
           },
           {
-            label:
-              "<span style='color:#bfd834; background-color: #bfd834; padding: 0px; border-radius: 0px;'>□</span> En circullation ",
+            label: "🟩 En circullation ",
             action: function (e, row) {
               window.api.updateReservations(
                 row.getData().id,
@@ -237,8 +262,7 @@
           },
 
           {
-            label:
-              "<span style='color:#ffc06e; background-color: #ffc06e; padding: 0px; border-radius: 0px;'>□</span>Incident ",
+            label: "🟧 Incident ",
             action: function (e, row) {
               window.api.updateReservations(
                 row.getData().id,
@@ -253,23 +277,14 @@
             separator: true,
           },
           {
-            label: "Admin Functions",
-            menu: [
-              {
-                label: "<i class='fas fa-trash'></i> Delete Row",
-                action: function (e, row) {
-                  row.delete();
-                },
-              },
-              {
-                label: "<i class='fas fa-ban'></i> Disabled Option",
-                disabled: true,
-              },
-            ],
+            label: "🗑️ Delete Row",
+            action: function (e, row) {
+              row.delete();
+            },
           },
         ];
 
-        let cars = [
+        /* let cars = [
           "F09",
           "F10",
           "F11",
@@ -281,20 +296,19 @@
           "F17",
           "F18",
           "F19",
-        ];
+        ];*/
 
         let clients = reservations
           .map((res) => res.nom) // Extract the 'nom' property from each reservation
           .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
           .filter((value, index, self) => self.indexOf(value) === index); // Filter out duplicate values
 
+        console.log(reservations);
         let table = new Tabulator("#table", {
           index: "id",
           data: reservations,
           layout: "fitDataStretch",
           rowContextMenu: rowMenu, //add context menu to rows
-          height:"500px",
-
           columns: [
             {
               title: "Tel",
@@ -318,7 +332,7 @@
               editor: "list",
               editorParams: {
                 values: clients,
-                autocomplete: "true",
+                autocomplete: true,
                 allowEmpty: true,
                 listOnEmpty: true,
                 freetext: true,
@@ -326,10 +340,10 @@
             },
             {
               title: "VHCL",
-              field: "car_code",
+              field: "code",
               editor: "list",
               editorParams: {
-                values: cars,
+                values: cars_codes,
                 autocomplete: "true",
                 allowEmpty: true,
                 listOnEmpty: true,
@@ -376,16 +390,11 @@
               title: "Montant",
               field: "montant",
               formatter: "money",
-              formatterParams: {
-                precision: 2,
-              },
               mutator: function (value, data) {
                 return data.prix * data.n_jr;
               },
               bottomCalc: "sum",
-              bottomCalcParams: {
-                precision: 2,
-              },
+              bottomCalcFormatter: "money",
               mutateLink: "credit",
             },
             {
@@ -395,10 +404,9 @@
               bottomCalcParams: {
                 precision: 2,
               },
+              bottomCalcFormatter: "money",
+
               formatter: "money",
-              formatterParams: {
-                precision: 2,
-              },
               editor: "number",
               editorParams: {
                 min: 0,
@@ -413,9 +421,7 @@
                 return data.montant - data.caisse;
               },
               bottomCalc: "sum",
-              bottomCalcParams: {
-                precision: 2,
-              },
+              bottomCalcFormatter: "money",
               formatter: function (cell, formatterParams) {
                 var value = cell.getValue();
                 if (value != 0) {
@@ -427,15 +433,6 @@
                 });
                 return formattedValue;
               },
-              /* cellEdited: function(cell) {
-                var value = cell.getValue();
-                if (value != 0) {
-                cell.getElement().style.backgroundColor = "#de9d9d";
-                } else {
-                // Handle the case where the value is empty
-                cell.getElement().style.backgroundColor = ""; // Reset to default
-                }
-                },*/
             },
             {
               title: "Observation",
@@ -459,7 +456,7 @@
                 row.getElement().style.backgroundColor = "#ffc06e";
                 break;
               default:
-                row.getElement().style.backgroundColor = "white";
+                break;
             }
           },
         });
@@ -546,6 +543,32 @@
             selectedYear = event.target.dataset.year;
           });
         });
+        //Islamic Duaa
+        const strings = [
+          "اللهم اهدنا",
+          "اللهم اغفر لي",
+          "رب اغفر وارحم",
+          "رب اشرح لي صدري",
+          "ربنا آتنا في الدنيا حسنة",
+          "رب اغفر لي وارحمني",
+          "اللهم إني أعوذ بك من العجز والكسل",
+          "اللهم اجعل لساني عامرا بذكرك",
+          "ربنا لا تزغ قلوبنا",
+        ];
+
+        function updateNavbar() {
+          const navbarList = document.getElementById("navbarList");
+          navbarList.innerHTML = "";
+          const randomString =
+            strings[Math.floor(Math.random() * strings.length)];
+
+          navbarList.textContent = randomString;
+        }
+
+        updateNavbar();
+
+        // Update navbar content every 10 minutes
+        setInterval(updateNavbar, 5 * 60 * 1000);
       });
     </script>
   </body>

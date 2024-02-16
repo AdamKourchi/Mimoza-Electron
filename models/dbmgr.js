@@ -1,13 +1,16 @@
 const fs = require("fs");
 const Database = require("better-sqlite3");
-// Path to your migration scripts directory
+const path = require("node:path");
+
+//Windows
 //C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/mimoza.db
 //C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/migration/migration.sql
-const DB_PATH =
-  "C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/mimoza.db";
+//Linux
+// /home/adam/Desktop/CurrentProjects/Mimoza-Electron/models/migration/migration.sql
+// /home/adam/Desktop/CurrentProjects/Mimoza-Electron/models/db/mimoza.db
+const DB_PATH = "C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/mimoza.db";
 const MIGRATIONS_DIR =
-  "C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/migration/migration.sql";
-
+  "C:/Users/hp/Desktop/MIMOZA_ELECTRON/Mimoza-Electron/models/migration/migration.sql";
 // Function to apply migrations
 function applyMigrations() {
   const db = new Database(DB_PATH, { verbose: console.log });

@@ -1,8 +1,8 @@
 {
-  "main": "main.js",
-  "name": "mimoza",
+  "name": "Mimoza",
   "version": "1.0.0",
   "description": "admin dashboard for mimoza",
+  "main": "main.js",
  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

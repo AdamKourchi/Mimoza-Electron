@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS cars (
     code TEXT,
     la_visite TEXT,
     fin_de_circulation TEXT,
-    mainlevee INTEGER DEFAULT 0,
-    facture_achat INTEGER DEFAULT 0,
-    prix REAL
+    mainlevee TEXT DEFAULT "EN CREDIT",
+    facture_achat TEXT DEFAULT "NON DISPONIBLE",
+    prix_achat REAL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS clients 
 (
@@ -29,7 +29,6 @@ CREATE  TABLE IF NOT EXISTS  reservations (
     credit REAL DEFAULT 0,
     observation TEXT,
     status TEXT,
-    payed INTEGER DEFAULT 0,
 	FOREIGN KEY (idclient) REFERENCES clients(idclient),  
 	FOREIGN KEY (id_vhcl) REFERENCES cars(id_vhcl)
 );
@@ -48,8 +47,8 @@ CREATE TABLE IF NOT EXISTS charges (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date_charge TEXT,
     observation TEXT,
-    prix REAL,
-    type_charge TEXT,
+    prix REAL DEFAULT 0,
+    type_charge TEXT DEFAULT "General",
     id_vhcl INTEGER,
     
     FOREIGN KEY (id_vhcl) REFERENCES cars(id_vhcl)

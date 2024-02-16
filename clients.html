@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mimoza</title>
+    <link rel="stylesheet" href="public/tab/dist/css/tabulator_site.min.css" />
+    <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="assets/style.css" />
+  </head>
+
+  <body class="bg-body-secondary">
+    <nav
+    class="navbar navbar-expand-sm bg-dark sticky-top"
+    data-bs-theme="dark"
+  >
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarTogglerDemo03"
+        aria-controls="navbarTogglerDemo03"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
+      </button>
+      <a class="navbar-brand" href="#"
+        ><img
+          src="./assets/logo.svg"
+          width="100px"
+          class="d-none d-xl-block"
+        />
+      </a>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" aria-current="page" href="index.html"
+              ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
+              Reservations |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="charges.html"
+              ><i
+                class="fa-solid fa-comment-dollar"
+                style="color: #ffffff"
+              ></i>
+              Charges |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="credits.html">
+              <i class="fa-solid fa-coins" style="color: #ffffff"></i>
+
+              Crédits |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="#">
+              <i
+                class="fa-solid fa-hand-holding-dollar"
+                style="color: #ffffff"
+              ></i>
+              Avances |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="cars.html">
+              <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
+              Park |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link active" href="#">
+              <i class="fa-solid fa-person" style="color: #ffffff"></i>
+              Clients |
+            </a>
+          </li>
+        </ul>
+        <span class="text-white" id="navbarList"></span>
+        <a href="infos.html"><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i></a>
+      </div>
+    </div>
+  </nav>
+
+
+
+
+
+
+    <div class="px-4">
+      <h1 class="mt-4">Clients :</h1>
+    </div>
+
+    <hr />
+    <div class="container-fluid shadow">
+      <div id="table"></div>
+    </div>
+
+    <script src="public/popper.js"></script>
+    <script src="public/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="public/luxon.js"></script>
+    <script src="public/tab/dist/js/tabulator.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let clients = window.api.getClients();
+
+        console.log(clients);
+
+        const formatedClients = clients.map((client) => {
+          return {
+            idclient: client.idclient,
+            nom: client.nom,
+            tel: client.tel,
+            reservations: {
+              id: client.id,
+              date_sortie: client.date_sortie,
+              id_vhcl: client.id_vhcl,
+              id_client: client.id_client,
+              status: client.status,
+              date_entree: client.date_entree,
+              prix: client.prix,
+              n_jr: client.n_jr,
+              montant: client.montant,
+              caisse: client.caisse,
+              credit: client.credit,
+              observation: client.observation,
+            },
+          };
+        });
+        console.log(formatedClients);
+
+        // Group reservations by client
+        const groupedByClient = formatedClients.reduce((acc, client) => {
+          if (!acc[client.idclient]) {
+            acc[client.idclient] = {
+              idclient: client.idclient,
+              nom: client.nom,
+              tel: client.tel,
+              reservations: [],
+            };
+          }
+          acc[client.idclient].reservations.push(client.reservations);
+          return acc;
+        }, {});
+
+        // Map the grouped data into the final format
+        const formattedData = Object.values(groupedByClient).map((client) => ({
+          idclient: client.idclient,
+          nom: client.nom,
+          tel: client.tel,
+          reservations: client.reservations,
+        }));
+
+        console.log(formattedData);
+
+        var hideIcon = function (cell, formatterParams, onRendered) {
+          //plain text value
+          return "🔍";
+        };
+
+        let table = new Tabulator("#table", {
+          index: "idclient",
+          data: formattedData,
+          layout: "fitColumns",
+          height: 500,
+          columns: [
+            {
+              formatter: hideIcon,
+              align: "center",
+              title: "🚗",
+              width: 30,
+              headerSort: false,
+              cellClick: function (e, row, formatterParams) {
+                console.log(row.getData().idclient);
+                const id = row.getData().idclient;
+                const subTable = document.querySelector(".subTable" + id + "");
+                if (subTable) {
+                  subTable.style.display =
+                    subTable.style.display === "none" ? "block" : "none";
+                }
+              },
+            },
+            { formatter: "rownum", hozAlign: "center", width: 30 },
+
+            {
+              title: "Nom",
+              field: "nom",
+              headerFilter: "input",
+              editor: "input",
+            },
+            {
+              title: "Tel",
+              field: "tel",
+              sorter: false,
+              headerFilter: "input",
+              editor: "input",
+            },
+            {
+              title: "Credit",
+              field: "reservations",
+              sorter: "number",
+              formatter: function (cell, formatterParams) {
+                var value = cell.getValue();
+                var credit = value.reduce((acc, reservation) => {
+                  return acc + reservation.credit;
+                }, 0);
+
+                var formattedValue = credit.toLocaleString(undefined, {
+                  minimumFractionDigits: formatterParams.precision || 2,
+                  maximumFractionDigits: formatterParams.precision || 2,
+                });
+                return formattedValue;
+              },
+            },
+          ],
+          rowFormatter: function (row) {
+            var holderEl = document.createElement("div");
+            var tableEl = document.createElement("div");
+
+            const id = row.getData().idclient;
+
+            holderEl.style.boxSizing = "border-box";
+            holderEl.style.padding = "10px 30px 10px 10px";
+            holderEl.style.borderTop = "1px solid #333";
+            holderEl.style.borderBotom = "1px solid #333";
+            holderEl.setAttribute("class", "subTable" + id + "");
+
+            holderEl.style.display = "none";
+
+            tableEl.style.border = "1px solid #333";
+            tableEl.setAttribute("class", "subTable" + id + "");
+
+            holderEl.appendChild(tableEl);
+
+            row.getElement().appendChild(holderEl);
+
+            var subTable = new Tabulator(tableEl, {
+              layout: "fitDataStretch",
+              selectableRows: true,
+              data: row.getData().reservations,
+              columns: [
+                { formatter: "rownum", hozAlign: "center", width: 30 },
+
+                {
+                  title: "Sortie",
+                  headerHozAlign: "center",
+                  field: "date_sortie",
+                  editor: "datetime",
+                  width: 200,
+                  editorParams: {
+                    format: "dd/MM/yyyy 🕖 HH:mm",
+                  },
+                },
+
+                {
+                  title: "VHCL",
+                  field: "car_code",
+                  editor: "input",
+                },
+                {
+                  title: "Date d'entrer",
+                  headerHozAlign: "center",
+                  field: "date_entree",
+                  editor: "datetime",
+                  width: 200,
+                  editorParams: {
+                    format: "dd/MM/yyyy 🕖 HH:mm",
+                  },
+                },
+                {
+                  title: "Prix",
+                  field: "prix",
+                  formatter: "money",
+                  formatterParams: {
+                    precision: 2,
+                  },
+                },
+                ,
+                {
+                  title: "Jr",
+                  field: "n_jr",
+                },
+                {
+                  title: "Montant",
+                  field: "montant",
+                  formatter: "money",
+                },
+                {
+                  title: "Caisse",
+                  field: "caisse",
+                  formatter: "money",
+                },
+                {
+                  title: "Credit",
+                  field: "credit",
+                  formatter: function (cell, formatterParams) {
+                    var value = cell.getValue();
+                    if (value != 0) {
+                      cell.getElement().style.backgroundColor = "#de9d9d";
+                    }
+                    var formattedValue = value.toLocaleString(undefined, {
+                      minimumFractionDigits: formatterParams.precision || 2,
+                      maximumFractionDigits: formatterParams.precision || 2,
+                    });
+                    return formattedValue;
+                  },
+                },
+                {
+                  title: "Observation",
+                  field: "observation",
+                },
+              ],
+            });
+          },
+        });
+
+        table.on("cellEdited", async function (cell) {
+          try {
+            const response = await window.api.updateClient(
+              cell.getRow().getData().idclient,
+              cell.getField(),
+              cell.getValue()
+            );
+            console.log(response);
+          } catch (error) {
+            console.error("Error updating Tel:", error);
+          }
+        });
+
+        //Islamic Duaa
+        const strings = [
+          "اللهم اهدنا",
+          "اللهم اغفر لي",
+          "رب اغفر وارحم",
+          "رب اشرح لي صدري",
+          "ربنا آتنا في الدنيا حسنة",
+          "رب اغفر لي وارحمني",
+          "اللهم إني أعوذ بك من العجز والكسل",
+          "اللهم اجعل لساني عامرا بذكرك",
+          "ربنا لا تزغ قلوبنا",
+        ];
+
+        function updateNavbar() {
+          const navbarList = document.getElementById("navbarList");
+          navbarList.innerHTML = "";
+          const randomString =
+            strings[Math.floor(Math.random() * strings.length)];
+
+          navbarList.textContent = randomString;
+        }
+
+        updateNavbar();
+
+        // Update navbar content every 10 minutes
+        setInterval(updateNavbar, 5 * 60 * 1000);
+      });
+    </script>
+  </body>
+</html>
