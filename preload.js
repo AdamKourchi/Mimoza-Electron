@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld("api", {
     Credits.updateCredits(id, field, value, date, montant, client, dateP),
   deleteCredits: (id, date, montant, client, dateP) =>
     Credits.deleteCredits(id, date, montant, client, dateP),
+  getReste: (month, year) => Credits.getReste(month, year),
   //Charges
   getCharges: (month, year) => Charges.getCharges(month, year),
   storeCharges: () => Charges.storeCharges(),

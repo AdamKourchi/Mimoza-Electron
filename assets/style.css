@@ -2,7 +2,9 @@
   font-family: "Arabic";
   src: url("Scheherazade_New/ScheherazadeNew-Regular.ttf") format("truetype");
 }
-
+body {
+  height: 100%;
+}
 
 #navbarList {
   font-family: "Arabic";

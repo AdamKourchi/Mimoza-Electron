@@ -111,6 +111,40 @@
     <div class="container-fluid mb-5 shadow">
       <div id="table2"></div>
     </div>
+    <hr />
+
+    <div class="accordion accordion-flush mb-5" id="accordionFlushExample">
+      <div class="accordion-item bg-body-secondary">
+        <h1 class="accordion-header bg-body-secondary">
+          <button
+            class="accordion-button collapsed bg-body-secondary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseExample"
+            aria-expanded="false"
+            aria-controls="collapseExample"
+          >
+            <span class="h1"
+              >Reste du mois précédent :<span id="resteDisplay" class="h3">
+                Janvier 2024</span
+              ></span
+            >
+          </button>
+        </h1>
+
+        <div
+          id="collapseExample"
+          class="accordion-collapse collapse"
+          data-bs-parent="#collapseExample"
+        >
+          <div class="accordion-body bg-body-secondary">
+            <div class="mt-2 mb-5 mx-2">
+              <div id="table3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
       <ul class="nav nav-underline" data-bs-theme="dark">
@@ -183,6 +217,16 @@
       const monthString =
         localMonth < 10 ? "0" + localMonth : localMonth.toString();
       const yearString = localYear.toString();
+
+      let lastMonth = localMonth - 1;
+      let lastYear = localYear;
+      if (lastMonth === 0) {
+        lastMonth = 12;
+        lastYear -= 1;
+      }
+      let lastMonthString =
+        lastMonth < 10 ? "0" + lastMonth : lastMonth.toString();
+
       //Title
       function numericMonthToName(numericMonth) {
         const months = [
@@ -204,6 +248,7 @@
       }
       //title
       const title = document.querySelector(".breadcrumb-item");
+      const resteDisplay = document.querySelector("#resteDisplay");
 
       document.addEventListener("DOMContentLoaded", function () {
         console.log(monthString, yearString);
@@ -212,7 +257,9 @@
         let nonPayed = window.api.getNonPayed(monthString, yearString);
 
         title.innerHTML = numericMonthToName(monthString) + " " + yearString;
-        console.log(credits);
+        resteDisplay.innerHTML =
+          " " + numericMonthToName(monthString - 1) + " " + yearString;
+
         //Making the current month active
         const activeMonth = document.querySelector(
           `a[data-month="${monthString}"]`
@@ -420,7 +467,10 @@
         async function getCreditsByDate(month, year) {
           let credits = await window.api.getCredits(month, year);
           let nonPayed = await window.api.getNonPayed(month, year);
+          let resteData = await window.api.getReste(lastMonthString, lastYear);
           title.innerHTML = numericMonthToName(month) + " " + year;
+          resteDisplay.innerHTML =
+            " " + numericMonthToName(lastMonth) + " " + lastYear;
           let clients = nonPayed
             .map((res) => res.nom) // Extract the 'nom' property from each reservation
             .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
@@ -435,6 +485,7 @@
 
           table.replaceData(credits);
           table2.replaceData(nonPayed);
+          table3.replaceData(resteData);
           table.updateColumnDefinition("nom", {
             editorParams: { values: clients },
           });
@@ -457,6 +508,15 @@
               }
             });
             selectedMonth = event.target.dataset.month;
+
+            lastMonth = selectedMonth - 1;
+            lastYear = selectedYear;
+            if (lastMonth === 0) {
+              lastMonth = 12;
+              lastYear -= 1;
+            }
+            lastMonthString =
+              lastMonth < 10 ? "0" + lastMonth : lastMonth.toString();
           });
         });
 
@@ -470,6 +530,8 @@
             getCreditsByDate(selectedMonth, event.target.dataset.year);
             displayedYear.innerHTML = event.target.dataset.year;
             selectedYear = event.target.dataset.year;
+
+            lastYear = selectedMonth === "01" ? selectedYear - 1 : selectedYear;
           });
         });
 
@@ -594,6 +656,31 @@
 
         // Update navbar content every 10 minutes
         setInterval(updateNavbar, 5 * 60 * 1000);
+
+        // Reste du mois précédent
+        console.log("SELECTEDMONTH", selectedMonth);
+        console.log("LAST", lastMonth);
+
+        const resteData = window.api.getReste(lastMonthString, lastYear);
+        console.log(resteData);
+
+        const table3 = new Tabulator("#table3", {
+          data: resteData,
+          layout: "fitDataTable",
+          columns: [
+            {
+              title: "Label",
+              field: "label",
+              formatter: function (cell) {
+                const count = cell.getRow().getData().count;
+                const val = cell.getValue();
+                return `  <b> ${val} (${count}) </b>    `;
+              },
+            },
+            { title: "Count", field: "count", visible: false, width: 200 },
+            { title: "Value", field: "value", bottomCalc: "sum", width: 200 },
+          ],
+        });
       });
     </script>
   </body>
