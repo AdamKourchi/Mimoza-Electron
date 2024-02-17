@@ -36,13 +36,13 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" aria-current="page" href="index.html"
+              <a id="index" class="nav-link" aria-current="page" href="#"
                 ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
                 Reservations |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="charges.html"
+              <a id="charges" class="nav-link" href="charges.html"
                 ><i
                   class="fa-solid fa-comment-dollar"
                   style="color: #ffffff"
@@ -51,14 +51,14 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="credits.html">
+              <a id="credits" class="nav-link" href="credits.html">
                 <i class="fa-solid fa-coins" style="color: #ffffff"></i>
 
                 Crédits |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="avances.html">
+              <a id="avances" class="nav-link" href="avances.html">
                 <i
                   class="fa-solid fa-hand-holding-dollar"
                   style="color: #ffffff"
@@ -67,20 +67,20 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="cars.html">
+              <a id="cars" class="nav-link" href="cars.html">
                 <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
                 Park |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link active" href="#">
+              <a id="clients" class="nav-link active" href="clients.html">
                 <i class="fa-solid fa-person" style="color: #ffffff"></i>
                 Clients |
               </a>
             </li>
           </ul>
           <span class="text-white" id="navbarList"></span>
-          <a href="infos.html"
+          <a id="infos" href="infos.html"
             ><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i
           ></a>
         </div>
@@ -101,6 +101,12 @@
     <script src="public/luxon.js"></script>
     <script src="public/tab/dist/js/tabulator.js"></script>
     <script>
+      var urlParams = new URLSearchParams(window.location.search);
+      let monthString, yearString;
+
+      monthString = urlParams.get("month");
+      yearString = urlParams.get("year");
+
       document.addEventListener("DOMContentLoaded", function () {
         let clients = window.api.getClients();
 
@@ -353,6 +359,69 @@
 
         // Update navbar content every 10 minutes
         setInterval(updateNavbar, 5 * 60 * 1000);
+
+        //REmebering month and year acrosss
+        const anchors = document.querySelectorAll("nav a");
+        anchors.forEach((anchor) => {
+          anchor.addEventListener("click", function (event) {
+            event.preventDefault();
+            // Get the destination and parameters based on the anchor's ID (or any other method)
+            var destination;
+            var month;
+            var year;
+            // Example: Set different destinations and parameters based on the anchor's ID
+            switch (this.id) {
+              case "index":
+                destination = "index.html";
+                month = monthString;
+                year = yearString;
+                break;
+              case "charges":
+                destination = "charges.html";
+                month = monthString;
+                year = yearString;
+                break;
+              case "credits":
+                destination = "credits.html";
+                month = monthString;
+                year = yearString;
+                break;
+              case "avances":
+                destination = "avances.html";
+                month = monthString;
+                year = yearString;
+                break;
+              case "cars":
+                destination = "cars.html";
+                month = monthString;
+                year = yearString;
+                break;
+              case "clients":
+                destination = "clients.html";
+                month = monthString;
+                year = yearString;
+                break;
+              case "infos":
+                destination = "infos.html";
+                month = monthString;
+                year = yearString;
+                break;
+            }
+
+            // Construct the URL with the parameters
+            var url =
+              destination +
+              "?month=" +
+              encodeURIComponent(month) +
+              "&year=" +
+              encodeURIComponent(year);
+
+            this.href = url;
+            console.log(url);
+            // Navigate to the URL
+            document.location.href = url;
+          });
+        });
       });
     </script>
   </body>
