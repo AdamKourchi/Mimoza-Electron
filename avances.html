@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
     <link rel="stylesheet" href="assets/style.css" />
   </head>
-
   <body class="bg-body-secondary">
     <nav
       class="navbar navbar-expand-sm bg-dark sticky-top"
@@ -36,7 +35,7 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link active" aria-current="page" href="#"
+              <a class="nav-link" aria-current="page" href="index.html"
                 ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
                 Reservations |
               </a>
@@ -58,7 +57,7 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="avances.html">
+              <a class="nav-link active" href="#">
                 <i
                   class="fa-solid fa-hand-holding-dollar"
                   style="color: #ffffff"
@@ -88,7 +87,23 @@
     </nav>
 
     <div class="px-4">
-      <h1 class="mt-4">Reservations :</h1>
+      <h1 class="mt-4">Avances :</h1>
+      <ol class="breadcrumb mb-4 d-block">
+        <li class="breadcrumb-item fs-3 active d-block"></li>
+      </ol>
+    </div>
+
+    <hr />
+    <div class="container-fluid shadow">
+      <div id="table" class="container-fluid"></div>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
+      <button id="addRow1" class="btn btn-success">+ Ajouter</button>
+    </div>
+
+    <div class="px-4">
+      <h1 class="mt-4">Verssements :</h1>
       <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item fs-3 active"></li>
       </ol>
@@ -96,12 +111,29 @@
 
     <hr />
     <div class="container-fluid shadow">
-      <div id="table"></div>
+      <div id="table2" class="container-fluid"></div>
     </div>
 
     <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
-      <button id="addRow" class="btn btn-success">+ Ajouter</button>
+      <button id="addRow2" class="btn btn-success">+ Ajouter</button>
     </div>
+
+    <div class="px-4">
+      <h1 class="mt-4">Driss :</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item fs-3 active"></li>
+      </ol>
+    </div>
+
+    <hr />
+    <div class="container-fluid shadow">
+      <div id="table3" class="container-fluid"></div>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
+      <button id="addRow3" class="btn btn-success">+ Ajouter</button>
+    </div>
+
     <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
       <ul class="nav nav-underline" data-bs-theme="dark">
         <li class="nav-item footer">
@@ -164,6 +196,7 @@
     <script src="public/bootstrap/dist/js/bootstrap.js"></script>
     <script src="public/luxon.js"></script>
     <script src="public/tab/dist/js/tabulator.js"></script>
+
     <script>
       const currentDate = new Date();
       const localMonth = currentDate.getMonth() + 1;
@@ -192,17 +225,26 @@
         return months[index];
       }
 
-      //title
-      const title = document.querySelector(".breadcrumb-item");
-
       document.addEventListener("DOMContentLoaded", function () {
-        console.log(monthString, yearString);
-        let reservations = window.api.getReservations(monthString, yearString);
-        let cars = window.api.getCarsCodes();
-        const cars_codes = cars.map((car) => car.code);
-        console.log(cars_codes);
-        title.innerHTML = numericMonthToName(monthString) + " " + yearString;
-        console.log(reservations);
+        const titles = document.querySelectorAll(".breadcrumb-item");
+        titles.forEach((title) => {
+          title.innerHTML = numericMonthToName(monthString) + " " + yearString;
+        });
+
+        let avances = window.api.getAvances(monthString, yearString);
+        console.log(avances);
+        let avance = [];
+        let verssements = [];
+        let driss = [];
+        avances.forEach((el) => {
+          if (el.type_avance === "avance") {
+            avance.push(el);
+          } else if (el.type_avance === "verssement") {
+            verssements.push(el);
+          } else {
+            driss.push(el);
+          }
+        });
         //Making the current month active
         const activeMonth = document.querySelector(
           `a[data-month="${monthString}"]`
@@ -214,305 +256,238 @@
         const displayedYear = document.querySelector(".dropdown-toggle");
         displayedYear.innerHTML = yearString;
 
+        console.log(avance, verssements, driss);
+
         document
-          .getElementById("addRow")
+          .getElementById("addRow1")
           .addEventListener("click", function () {
-            table.addRow({
-              caisse: 0,
-              credit: 0,
-              prix: 0,
-              n_jr: 0,
-              montant: 0,
-            });
+            table.addRow({});
           });
+        document
+          .getElementById("addRow2")
+          .addEventListener("click", function () {
+            table2.addRow({});
+          });
+        document
+          .getElementById("addRow3")
+          .addEventListener("click", function () {
+            table3.addRow({});
+          });
+
+        // Tabulator
+        let types = ["VERSEMENT", "ESPECE"];
 
         var rowMenu = [
           {
-            label: "🟦 Meknes",
-            action: function (e, row) {
-              window.api.updateReservations(
-                row.getData().id,
-                "status",
-                "Meknes"
-              );
-              row.getElement().style.backgroundColor = "#a9d2f0";
-            },
-          },
-          {
-            label: "⬜ A retourner",
-            action: function (e, row) {
-              window.api.updateReservations(
-                row.getData().id,
-                "status",
-                "A retourner"
-              );
-
-              row.getElement().style.backgroundColor = "";
-            },
-          },
-          {
-            label: "🟩 En circullation ",
-            action: function (e, row) {
-              window.api.updateReservations(
-                row.getData().id,
-                "status",
-                "En circullation"
-              );
-              row.getElement().style.backgroundColor = "#bfd834";
-            },
-          },
-
-          {
-            label: "🟧 Incident ",
-            action: function (e, row) {
-              window.api.updateReservations(
-                row.getData().id,
-                "status",
-                "Incident"
-              );
-              row.getElement().style.backgroundColor = "#ffc06e";
-            },
-          },
-
-          {
-            separator: true,
-          },
-          {
-            label: "🗑️ Delete Row",
+            label: "<i class='fas fa-trash'></i> Delete Row",
             action: function (e, row) {
               row.delete();
             },
           },
         ];
 
-        /* let cars = [
-          "F09",
-          "F10",
-          "F11",
-          "F12",
-          "F13",
-          "F14",
-          "F15",
-          "F16",
-          "F17",
-          "F18",
-          "F19",
-        ];*/
-
-        let clients = reservations
-          .map((res) => res.nom) // Extract the 'nom' property from each reservation
-          .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
-          .filter((value, index, self) => self.indexOf(value) === index); // Filter out duplicate values
-
-        console.log(reservations);
-        let table = new Tabulator("#table", {
+        const table = new Tabulator("#table", {
+          data: avance,
+          layout: "fitColumns",
+          rowContextMenu: rowMenu,
           index: "id",
-          data: reservations,
-          layout: "fitDataStretch",
-          rowContextMenu: rowMenu, //add context menu to rows
           columns: [
             {
-              title: "Tel",
-              field: "tel",
-              sorter: false,
-              editor: true,
-            },
-            {
-              title: "Sortie",
-              headerHozAlign: "center",
-              field: "date_sortie",
-              editor: "datetime",
-              width: 200,
-              editorParams: {
-                format: "dd/MM/yyyy 🕖 HH:mm",
-              },
-            },
-            {
-              title: "Nom",
+              title: "Employé",
               field: "nom",
               editor: "list",
               editorParams: {
-                values: clients,
+                values: ["Med", "Said", "Zakia", "Hafid", "Abdo"],
                 autocomplete: true,
                 allowEmpty: true,
                 listOnEmpty: true,
                 freetext: true,
               },
-            },
-            {
-              title: "VHCL",
-              field: "code",
-              editor: "list",
-              editorParams: {
-                values: cars_codes,
-                autocomplete: true,
-                allowEmpty: true,
-                listOnEmpty: true,
-                valuesLookup: true,
-                freetext: true,
-              },
-            },
-            {
-              title: "Date d'entrer",
-              headerHozAlign: "center",
-              field: "date_entree",
-              editor: "datetime",
-              width: 200,
-              editorParams: {
-                format: "dd/MM/yyyy 🕖 HH:mm",
-              },
-            },
-            {
-              title: "Prix",
-              field: "prix",
-              editor: true,
-              formatter: "money",
-              formatterParams: {
-                precision: 2,
-              },
-              editor: "number",
-              editorParams: {
-                min: 0,
-                step: 10,
-              },
-              mutateLink: "montant",
-            },
-            ,
-            {
-              title: "Jr",
-              field: "n_jr",
-              editor: "number",
-              editorParams: {
-                min: 0,
-              },
-              mutateLink: "montant",
             },
             {
               title: "Montant",
               field: "montant",
-              formatter: "money",
-              mutator: function (value, data) {
-                return data.prix * data.n_jr;
+              editor: "number",
+              editorParams: {
+                step: 100,
+                min: 0,
               },
-              bottomCalc: "sum",
-              bottomCalcFormatter: "money",
-              mutateLink: "credit",
-            },
-            {
-              title: "Caisse",
-              field: "caisse",
+              formatter: "money",
               bottomCalc: "sum",
               bottomCalcParams: {
                 precision: 2,
               },
               bottomCalcFormatter: "money",
-
-              formatter: "money",
-              editor: "number",
-              editorParams: {
-                min: 0,
-                step: 10,
-              },
-              mutateLink: "credit",
-            },
-            {
-              title: "Credit",
-              field: "credit",
-              mutator: function (value, data) {
-                return data.montant - data.caisse;
-              },
-              bottomCalc: "sum",
-              bottomCalcFormatter: "money",
-              formatter: function (cell, formatterParams) {
-                var value = cell.getValue();
-                if (value != 0) {
-                  cell.getElement().style.backgroundColor = "#de9d9d";
-                }
-                var formattedValue = value.toLocaleString(undefined, {
-                  minimumFractionDigits: formatterParams.precision || 2,
-                  maximumFractionDigits: formatterParams.precision || 2,
-                });
-                return formattedValue;
-              },
             },
             {
               title: "Observation",
               field: "observation",
-              editor: true,
+              editor: "input",
             },
           ],
-          rowFormatter: function (row) {
-            var rowData = row.getData();
-            switch (rowData.status) {
-              case "Meknes":
-                row.getElement().style.backgroundColor = "#a9d2f0";
-                break;
-              case "A retourner":
-                row.getElement().style.backgroundColor = "white";
-                break;
-              case "En circullation":
-                row.getElement().style.backgroundColor = "#bfd834";
-                break;
-              case "Incident":
-                row.getElement().style.backgroundColor = "#ffc06e";
-                break;
-              default:
-                break;
-            }
-          },
         });
 
-        table.on("cellEdited", async function (cell) {
-          console.log("cell edited");
-          let updatedData = {
-            [cell.getField()]: cell.getValue(),
-          };
-          console.log(updatedData);
+        const table2 = new Tabulator("#table2", {
+          data: verssements,
+          layout: "fitColumns",
+          rowContextMenu: rowMenu,
+          index: "id",
+          columns: [
+            {
+              title: "Date",
+              field: "date_avance",
+              editor: "date",
+              editorParams: {
+                format: "dd/MM/yyyy",
+              },
+            },
+            {
+              title: "Versement",
+              field: "observation",
+              editor: "input",
+            },
+            {
+              title: "Montant",
+              field: "montant",
+              editor: "number",
+              editorParams: {
+                step: 100,
+                min: 0,
+              },
+              formatter: "money",
+              bottomCalc: "sum",
+              bottomCalcParams: {
+                precision: 2,
+              },
+              bottomCalcFormatter: "money",
+            },
+          ],
+        });
+
+        const table3 = new Tabulator("#table3", {
+          data: driss,
+          layout: "fitColumns",
+          rowContextMenu: rowMenu,
+          index: "id",
+          columns: [
+            {
+              title: "Date",
+              field: "date_avance",
+              editor: "date",
+              editorParams: {
+                format: "dd/MM/yyyy",
+              },
+            },
+            {
+              title: "Versement",
+              field: "observation",
+              editor: "input",
+            },
+            {
+              title: "Montant",
+              field: "montant",
+              editor: "number",
+              editorParams: {
+                step: 100,
+                min: 0,
+              },
+              formatter: "money",
+              bottomCalc: "sum",
+              bottomCalcParams: {
+                precision: 2,
+              },
+              bottomCalcFormatter: "money",
+            },
+          ],
+        });
+
+        // Define the event listener functions separately
+        async function cellEditedHandler(cell) {
           try {
-            const response = await window.api.updateReservations(
+            const response = await window.api.updateAvances(
               cell.getRow().getData().id,
               cell.getField(),
-              cell.getValue(),
-              cell.getRow().getData().nom,
-              cell.getRow().getData().tel
+              cell.getValue()
             );
             console.log(response);
-            response.nom
-              ? cell.getRow().update({
-                  nom: response.nom,
-                  tel: response.tel,
-                })
-              : null;
           } catch (error) {
-            console.error("Error updating reservations:", error);
+            console.error("Error updating avances:", error);
           }
-        });
+        }
+
+        function rowDeletedHandler(row) {
+          window.api.deleteAvances(row.getData().id);
+          console.log("row deleted");
+        }
 
         table.on("rowAdded", async function (row) {
           try {
-            const response = await window.api.storeReservations(); // Call the storeReservations function from the preload script
+            const response = await window.api.storeAvances("avance");
             console.log(response);
             row.update({
               id: response.id,
-              date_sortie: response.date_sortie,
-              date_entree: response.date_entree,
+              date_avance: response.date_avance,
+              montant: response.montant,
             });
           } catch (error) {
-            console.error("Error storing reservations:", error);
+            console.error("Error storing avances:", error);
           }
         });
+        table.on("cellEdited", cellEditedHandler);
+        table.on("rowDeleted", rowDeletedHandler);
 
-        table.on("rowDeleted", function (row) {
-          window.api.deleteReservations(row.getData().id);
-          console.log("row deleted");
+        table2.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeAvances("verssement");
+            console.log(response);
+            row.update({
+              id: response.id,
+              date_avance: response.date_avance,
+              montant: response.montant,
+            });
+          } catch (error) {
+            console.error("Error storing avances:", error);
+          }
         });
+        table2.on("cellEdited", cellEditedHandler);
+        table2.on("rowDeleted", rowDeletedHandler);
+
+        table3.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeAvances("driss");
+            console.log(response);
+            row.update({
+              id: response.id,
+              date_avance: response.date_avance,
+              montant: response.montant,
+            });
+          } catch (error) {
+            console.error("Error storing avances:", error);
+          }
+        });
+        table3.on("cellEdited", cellEditedHandler);
+        table3.on("rowDeleted", rowDeletedHandler);
 
         // Function to get reservations by date
 
-        async function getReservationsByDate(month, year) {
-          let reservations = await window.api.getReservations(month, year);
-          title.innerHTML = numericMonthToName(month) + " " + year;
-          table.replaceData(reservations);
+        async function getAvancesByDate(month, year) {
+          let avances = await window.api.getAvances(month, year);
+          //      title.innerHTML = numericMonthToName(month) + " " + year;
+          avance = [];
+          verssements = [];
+          driss = [];
+          avances.forEach((el) => {
+            if (el.type_avance === "avance") {
+              avance.push(el);
+            } else if (el.type_avance === "verssement") {
+              verssements.push(el);
+            } else {
+              driss.push(el);
+            }
+          });
+          table.replaceData(avance);
+          table2.replaceData(verssements);
+          table3.replaceData(driss);
         }
 
         // Add event listeners to the months links in Footer
@@ -521,7 +496,7 @@
           link.addEventListener("click", function (event) {
             event.preventDefault();
             console.log(event.target.dataset.month);
-            getReservationsByDate(event.target.dataset.month, selectedYear);
+            getAvancesByDate(event.target.dataset.month, selectedYear);
             event.target.classList.add("active");
             monthsLinks.forEach(function (link) {
               if (link !== event.target) {
@@ -539,7 +514,7 @@
           link.addEventListener("click", function (event) {
             event.preventDefault();
             console.log(event.target.dataset.year);
-            getReservationsByDate(selectedMonth, event.target.dataset.year);
+            getAvancesByDate(selectedMonth, event.target.dataset.year);
             displayedYear.innerHTML = event.target.dataset.year;
             selectedYear = event.target.dataset.year;
           });

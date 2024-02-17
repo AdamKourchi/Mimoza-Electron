@@ -182,14 +182,14 @@ exports.getReste = (month, year) => {
 `);
   const charges = stmt2.get();
 
-  /*const stmt3 = db.prepare(
+  const stmt3 = db.prepare(
     `
     Select SUM(montant) as avances, COUNT(*) as count_avances
     FROM avances 
     WHERE date_avance LIKE '__/${month}/${year}%';
     `
   );
-  const avances = stmt3.get();*/
+  const avances = stmt3.get();
   const stmt4 = db.prepare(`
     SELECT SUM(montant) as credits , COUNT(*) as count_credits
     FROM credits 
@@ -200,6 +200,7 @@ exports.getReste = (month, year) => {
   credits.credits ? credits.credits : (credits.credits = 0);
   charges.charges ? charges.charges : 0;
   caisse.caisse ? caisse.caisse : 0;
+  avances.avances ? avances.avances : 0;
 
   const reste = [
     {
@@ -209,6 +210,7 @@ exports.getReste = (month, year) => {
     },
     { label: "Charges", value: -charges.charges, count: charges.count_charges },
     { label: "Credits", value: +credits.credits, count: credits.count_credits },
+    { label: "Avances", value: -avances.avances, count: avances.count_avances },
   ];
 
   return reste;
