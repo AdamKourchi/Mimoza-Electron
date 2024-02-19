@@ -6,58 +6,93 @@
     <title>Mimoza</title>
     <link rel="stylesheet" href="public/tab/dist/css/tabulator_simple.css" />
     <link href="public/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="assets/style.css" />
+
+
 </head>
-<style>
-    .tabulator-col-title { 
-        color: blue;
-        text-align: center;
-    }
-    
-</style>
 
-<body>
-    <nav class="navbar navbar-expand-lg bg-dark sticky-top" data-bs-theme="dark">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03"
-                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
-            </button>
-            <a class="navbar-brand" href="#"><img src="" width="120px" /></a>
-            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link " aria-current="page" href="index.html">Reservations</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link " href="cars.html">Park</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link" href="charges.html">Charges</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link" href="credits.html">Credits</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link active">Avances</a>
-                    </li>
-                    <li class="nav-item d-flex align-items-center">
-                        <a class="nav-link">Clients</a>
-                    </li>
-                </ul>
-                <form class="d-flex align-items-center" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                    <li class="nav-item"></li>
 
-                    <button class="btn btn-success" type="submit">Search</button>
-                </form>
-            </div>
-        </div>
-    </nav>
+<body class="bg-body-secondary">
+    <nav
+    class="navbar navbar-expand-sm bg-dark sticky-top"
+    data-bs-theme="dark"
+  >
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarTogglerDemo03"
+        aria-controls="navbarTogglerDemo03"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggl/e/r-ic/o/n">placeholder</span>
+      </button>
+      <a class="navbar-brand" href="#"
+        ><img
+          src="./assets/logo.svg"
+          width="100px"
+          class="d-none d-xl-block"
+        />
+      </a>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" aria-current="page" href="index.html"
+              ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
+              Reservations |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="charges.html"
+              ><i
+                class="fa-solid fa-comment-dollar"
+                style="color: #ffffff"
+              ></i>
+              Charges |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="credits.html">
+              <i class="fa-solid fa-coins" style="color: #ffffff"></i>
+
+              Crédits |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link active" href="#">
+              <i
+                class="fa-solid fa-hand-holding-dollar"
+                style="color: #ffffff"
+              ></i>
+              Avances |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="cars.html">
+              <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
+              Park |
+            </a>
+          </li>
+          <li class="nav-item d-flex align-items-center">
+            <a class="nav-link" href="clients.html">
+              <i class="fa-solid fa-person" style="color: #ffffff"></i>
+              Clients |
+            </a>
+          </li>
+        </ul>
+        <span class="text-white" id="navbarList"></span>
+        <a href="infos.html"><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i></a>
+      </div>
+    </div>
+  </nav>
 
     <div class="px-4">
-        <h1 class="mt-4">Avances</h1>
+        <h1 class="mt-4">Avances :</h1>
     </div>
-
+    <hr />
     <div id="table" class="container-fluid"></div>
 
     <div class="container-fluid  d-flex justify-content-end mt-2 mb-5">
@@ -78,6 +113,7 @@
 
             document.getElementById('addRow').addEventListener('click', function () {
                 table.addRow({
+                    Date:'',Versement:'',Type:'',Montant:'',
 
                 });
             });
@@ -148,9 +184,73 @@
                 height: "213px",
                 rowContextMenu: rowMenu,
             });
-
-
+            table.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeAvances();
+            console.log(response);
+            row.update({ id: response });
+          } catch (error) {
+            console.error("Error storing avances:", error);
+          }
         });
+        table.on("cellEdited", async function (cell) {
+          console.log("cell edited");
+          console.log(cell.getRow().getData().id);
+          let updatedData = {
+            [cell.getField()]: cell.getValue(),
+          };
+          console.log(updatedData);
+          try {
+            const response = await window.api.updateAvances(
+              cell.getRow().getData().id,
+              cell.getField(),
+              cell.getValue()
+            );
+            console.log(response);
+          } catch (error) {
+            console.error("Error updating cars:", error);
+          }
+        });
+        table.on("rowDeleted", async function (row) {
+          try {
+            console.log(row.getData().id);
+            const response = await window.api.deleteAvances(row.getData().id); // Call the storeReservations function from the preload script
+            console.log(response);
+          } catch (error) {
+            console.error("Error deleting avances:", error);
+          }
+        });
+
+
+        //Islamic Duaa
+        const strings = [
+          "اللهم اهدنا",
+          "اللهم اغفر لي",
+          "رب اغفر وارحم",
+          "رب اشرح لي صدري",
+          "ربنا آتنا في الدنيا حسنة",
+          "رب اغفر لي وارحمني",
+          "اللهم إني أعوذ بك من العجز والكسل",
+          "اللهم اجعل لساني عامرا بذكرك",
+          "ربنا لا تزغ قلوبنا",
+        ];
+
+        function updateNavbar() {
+          const navbarList = document.getElementById("navbarList");
+          navbarList.innerHTML = "";
+          const randomString =
+            strings[Math.floor(Math.random() * strings.length)];
+
+          navbarList.textContent = randomString;
+        }
+
+        updateNavbar();
+
+        // Update navbar content every 10 minutes
+        setInterval(updateNavbar, 5 * 60 * 1000);
+      
+        });
+
     </script>
 </body>
 

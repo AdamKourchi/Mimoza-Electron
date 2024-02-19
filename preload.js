@@ -1,30 +1,42 @@
-const { contextBridge,ipcRenderer } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 const Reservations = require("./models/Reservations.js");
 const Cars = require("./models/Cars.js");
 const Credits = require("./models/Credits.js");
-const Avances = require ("./models/Avances.js");
+const Charges = require("./models/Charges.js");
+const Clients = require("./models/Clients.js");
+const Avances = require("./models/Avances.js")
 contextBridge.exposeInMainWorld("api", {
-  getReservations: (month,year) => Reservations.getReservations(month,year),
-  storeReservations:() => Reservations.storeReservations(),
-  updateReservations: (id, field,value,nom,tel) => Reservations.updateReservations(id, field, value,nom,tel),
+  //Resrervations
+  getReservations: (month, year) => Reservations.getReservations(month, year),
+  storeReservations: () => Reservations.storeReservations(),
+  updateReservations: (id, field, value, nom, tel) =>
+    Reservations.updateReservations(id, field, value, nom, tel),
   deleteReservations: (id) => Reservations.deleteReservations(id),
-
+  //Cars
   getCars: () => Cars.getCars(),
   storeCars: () => Cars.storeCars(),
-  updateCars: (id, field,value) => Cars.updateCars(id, field, value),
+  updateCars: (id, field, value) => Cars.updateCars(id, field, value),
   deleteCars: (id) => Cars.deleteCars(id),
- 
-
-  
-  getCredits: (month,year) => Credits.getCredits(month,year),
-  getNonPayed: (month,year) => Credits.getNonPayed(month,year),
+  getCarsCodes: () => Cars.getCarsCodes(),
+  //Credits
+  getCredits: (month, year) => Credits.getCredits(month, year),
+  getNonPayed: (month, year) => Credits.getNonPayed(month, year),
   storeCredits: () => Credits.storeCredits(),
-
-  getAvances: ()=> Avances.getAvances(),
-  storeAvances: () => Avances.storeAvances(),
-  updateAvances: (id, field,value) => Avances.updateAvances(id, field, value),
-  deleteAvances: (id) => Avances.deleteAvances(id),
+  updateCredits: (id, field, value, date, montant, client, dateP) =>
+    Credits.updateCredits(id, field, value, date, montant, client, dateP),
+  deleteCredits: (id, date, montant, client, dateP) =>
+    Credits.deleteCredits(id, date, montant, client, dateP),
+  //Charges
+  getCharges: (month, year) => Charges.getCharges(month, year),
+  storeCharges: () => Charges.storeCharges(),
+  updateCharges: (id, field, value) => Charges.updateCharges(id, field, value),
+  deleteCharges: (id) => Charges.deleteCharges(id),
+  //Clients
+  getClients: () => Clients.getClients(),
+  updateClient: (id, field, value) => Clients.updateClient(id, field, value),
+  //Avances 
+  getAvances:()=>Avances.getAvances(),
+  storeAvances:()=>Avances.getAvances(),
+  updateAvances: (id,field,value) => Avances.updateAvances(id,field, value),
 
 });
-
-

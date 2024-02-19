@@ -3,26 +3,28 @@ let db = dbmgr.db;
 
 exports.getReservations = function (month, year) {
   const stmt = db.prepare(`
-    SELECT *, clients.nom, clients.tel 
-    FROM reservations 
-    LEFT JOIN clients ON reservations.idclient = clients.idclient
-    WHERE date_sortie LIKE '__/${month}/${year} %';
+  SELECT *, clients.nom, clients.tel ,cars.code
+  FROM reservations 
+  LEFT JOIN clients ON reservations.idclient = clients.idclient
+  LEFT JOIN cars ON reservations.id_vhcl = cars.id_vhcl
+  WHERE date_sortie LIKE '__/${month}/${year}%'
   `);
 
-  return stmt.all();
+  console.log("DB", stmt.all({ month, year }));
+  return stmt.all({ month, year });
 };
 
 exports.storeReservations = () => {
   const stmt = db.prepare(
-    `INSERT INTO reservations (date_sortie,date_entree) VALUES (strftime('%d/%m/%Y 🕖 %H:%M', 'now','localtime'),strftime('%d/%m/%Y 🕖 %H:%M', 'now','localtime'))`
+    `INSERT INTO reservations (date_sortie) VALUES (strftime('%d/%m/%Y 🕖 %H:%M', 'now', 'localtime'))`
   );
   const info = stmt.run();
-  const insertedRowId = info.lastInsertRowid;
-  const insertedRow = db
-    .prepare("SELECT * FROM reservations WHERE rowid = ?")
-    .get(insertedRowId);
 
-  return insertedRow;
+  const insertedRes = db
+    .prepare("SELECT * FROM reservations WHERE id = ?")
+    .get(info.lastInsertRowid);
+
+  return insertedRes;
 };
 
 exports.updateReservations = (id, field, value, nom, tel) => {
@@ -89,6 +91,28 @@ exports.updateReservations = (id, field, value, nom, tel) => {
       }
     }
   }
+  if (field === "code") {
+    const stmt = db.prepare(
+      `SELECT cars.code, cars.id_vhcl FROM cars WHERE code = $value`
+    );
+    const selectResult = stmt.get({ value });
+    if (selectResult) {
+      const stmt2 = db.prepare(
+        `UPDATE reservations SET id_vhcl = $id_vhcl WHERE id = $id`
+      );
+      stmt2.run({ id_vhcl: selectResult.id_vhcl, id });
+      return selectResult;
+    }
+    const stmt2 = db.prepare(`INSERT INTO cars (code) VALUES ($value)`);
+    const insertResult = stmt2.run({ value });
+    const newCarId = insertResult.lastInsertRowid;
+    const stmt3 = db.prepare(
+      `UPDATE reservations SET id_vhcl = $newCarId WHERE id = $id`
+    );
+    const result = stmt3.run({ newCarId, id });
+    return result;
+  }
+
   // For other fields, update the reservation directly
   const stmt5 = db.prepare(
     `UPDATE reservations SET ${field} = $value WHERE id = $id`
@@ -102,33 +126,3 @@ exports.deleteReservations = (id) => {
   const result = stmt.run({ id });
   return result;
 };
-
-/*
- r.id AS id,
-    r.date_sortie AS date_sortie,
-    r.date_entree AS date_entree,
-    r.prix AS prix,
-    r.n_jr AS n_jr,
-    r.montant AS montant,
-    r.caisse AS caisse,
-    r.credit AS credit,
-    r.observation AS observation,
-    r.status AS status,
-    c.idclient AS client_id,
-    c.nom AS client_nom,
-    c.tel AS client_tel,
-    ca.id_vhcl AS car_id,
-    ca.marque AS car_marque,
-    ca.imt AS car_imt,
-    ca.code AS car_code,
-    ca.fin_circ AS car_fin_circ,
-    ca.visite AS car_visite,
-    ca.mainlevee AS car_mainlevee,
-    ca.facture_achat AS car_facture_achat,
-    ca.prix_achat AS car_prix_achat
-    FROM 
-    reservations r
-INNER JOIN 
-    clients c ON r.idclient = c.idclient
-INNER JOIN 
-    cars ca ON r.id_vhcl = ca.id_vhcl;*/
