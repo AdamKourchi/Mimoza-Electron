@@ -1,6 +1,7 @@
 let dbmgr = require("./dbmgr.js");
 let db = dbmgr.db;
 
+
 exports.getCars = function () {
   const stmt = db.prepare(`
   SELECT * FROM cars;

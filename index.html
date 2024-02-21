@@ -173,9 +173,7 @@
         monthString = urlParams.get("month");
         // Get the value of the "year" parameter
         yearString = urlParams.get("year");
-        console.log("TravelData", monthString, yearString);
       } else {
-        console.log("NEW APP");
         const currentDate = new Date();
         const localMonth = currentDate.getMonth() + 1;
         const localYear = currentDate.getFullYear();
@@ -183,7 +181,6 @@
         monthString =
           localMonth < 10 ? "0" + localMonth : localMonth.toString();
         yearString = localYear.toString();
-        console.log(monthString, yearString);
       }
 
       function numericMonthToName(numericMonth) {
@@ -209,15 +206,12 @@
       const title = document.querySelector(".breadcrumb-item");
 
       document.addEventListener("DOMContentLoaded", function () {
-        console.log(monthString, yearString);
         let reservations = window.api.getReservations(monthString, yearString);
         let cars = window.api.getCarsCodes();
         let clients = window.api.getClients();
 
         const cars_codes = cars.map((car) => car.code);
-        console.log(cars_codes);
         title.innerHTML = numericMonthToName(monthString) + " " + yearString;
-        console.log(reservations);
         //Making the current month active
         const activeMonth = document.querySelector(
           `a[data-month="${monthString}"]`
@@ -243,7 +237,8 @@
 
         var rowMenu = [
           {
-            label: "🟦 Meknes",
+            label:
+              "<i class='fa-solid fa-circle' style='color: #a9d2f0;'></i> Meknes",
             action: function (e, row) {
               window.api.updateReservations(
                 row.getData().id,
@@ -254,7 +249,8 @@
             },
           },
           {
-            label: "⬜ A retourner",
+            label:
+              "<i class='fa-solid fa-circle' style='color: #d9d9d9;'></i>  A retourner",
             action: function (e, row) {
               window.api.updateReservations(
                 row.getData().id,
@@ -266,7 +262,8 @@
             },
           },
           {
-            label: "🟩 En circullation ",
+            label:
+              "<i class='fa-solid fa-circle' style='color: #bfd834;'></i>  En circullation ",
             action: function (e, row) {
               window.api.updateReservations(
                 row.getData().id,
@@ -278,7 +275,8 @@
           },
 
           {
-            label: "🟧 Incident ",
+            label:
+              "<i class='fa-solid fa-circle' style='color: #ffc06e;'></i>  Incident ",
             action: function (e, row) {
               window.api.updateReservations(
                 row.getData().id,
@@ -293,7 +291,8 @@
             separator: true,
           },
           {
-            label: "🗑️ Delete Row",
+            label:
+              "<i class='fa-regular fa-trash-can' style='color: #c30909;'></i> Supprimer la ligne",
             action: function (e, row) {
               row.delete();
             },
@@ -316,8 +315,6 @@
 
         clients = clients.map((item) => item.nom);
         // .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
-
-        console.log(reservations);
 
         let table = new Tabulator("#table", {
           index: "id",
@@ -480,11 +477,6 @@
         });
 
         table.on("cellEdited", async function (cell) {
-          console.log("cell edited");
-          let updatedData = {
-            [cell.getField()]: cell.getValue(),
-          };
-          console.log(updatedData);
           try {
             const response = await window.api.updateReservations(
               cell.getRow().getData().id,
@@ -493,7 +485,6 @@
               cell.getRow().getData().nom,
               cell.getRow().getData().tel
             );
-            console.log(response);
             response.nom
               ? cell.getRow().update({
                   nom: response.nom,
@@ -508,7 +499,6 @@
         table.on("rowAdded", async function (row) {
           try {
             const response = await window.api.storeReservations(); // Call the storeReservations function from the preload script
-            console.log(response);
             row.update({
               id: response.id,
               date_sortie: response.date_sortie,
@@ -521,7 +511,6 @@
 
         table.on("rowDeleted", function (row) {
           window.api.deleteReservations(row.getData().id);
-          console.log("row deleted");
         });
 
         // Function to get reservations by date
@@ -537,7 +526,6 @@
         monthsLinks.forEach(function (link) {
           link.addEventListener("click", function (event) {
             event.preventDefault();
-            console.log(event.target.dataset.month);
             getReservationsByDate(event.target.dataset.month, selectedYear);
             event.target.classList.add("active");
             monthsLinks.forEach(function (link) {
@@ -555,7 +543,6 @@
         yearLinks.forEach(function (link) {
           link.addEventListener("click", function (event) {
             event.preventDefault();
-            console.log(event.target.dataset.year);
             getReservationsByDate(selectedMonth, event.target.dataset.year);
             displayedYear.innerHTML = event.target.dataset.year;
             selectedYear = event.target.dataset.year;
@@ -630,7 +617,7 @@
                 year = selectedYear;
                 break;
               case "infos":
-              destination = "infos.html";
+                destination = "infos.html";
                 month = selectedMonth;
                 year = selectedYear;
                 break;
@@ -644,7 +631,6 @@
               encodeURIComponent(year);
 
             this.href = url;
-            console.log(url);
             // Navigate to the URL
             document.location.href = url;
           });

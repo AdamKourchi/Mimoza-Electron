@@ -202,7 +202,6 @@
       let monthString, yearString;
       monthString = urlParams.get("month");
       yearString = urlParams.get("year");
-      console.log("TravelData", monthString, yearString);
 
       let selectedMonth = monthString;
       let selectedYear = yearString;
@@ -233,7 +232,6 @@
         });
 
         let avances = window.api.getAvances(monthString, yearString);
-        console.log(avances);
         let avance = [];
         let verssements = [];
         let driss = [];
@@ -256,7 +254,6 @@
         const displayedYear = document.querySelector(".dropdown-toggle");
         displayedYear.innerHTML = yearString;
 
-        console.log(avance, verssements, driss);
 
         document
           .getElementById("addRow1")
@@ -279,7 +276,8 @@
 
         var rowMenu = [
           {
-            label: "<i class='fas fa-trash'></i> Delete Row",
+            label:
+            "<i class='fa-regular fa-trash-can' style='color: #c30909;'></i> Supprimer la ligne",
             action: function (e, row) {
               row.delete();
             },
@@ -464,7 +462,6 @@
         table3.on("rowAdded", async function (row) {
           try {
             const response = await window.api.storeAvances("driss");
-            console.log(response);
             row.update({
               id: response.id,
               date_avance: response.date_avance,
@@ -506,7 +503,6 @@
         monthsLinks.forEach(function (link) {
           link.addEventListener("click", function (event) {
             event.preventDefault();
-            console.log(event.target.dataset.month);
             getAvancesByDate(event.target.dataset.month, selectedYear);
             event.target.classList.add("active");
             monthsLinks.forEach(function (link) {
@@ -524,7 +520,6 @@
         yearLinks.forEach(function (link) {
           link.addEventListener("click", function (event) {
             event.preventDefault();
-            console.log(event.target.dataset.year);
             getAvancesByDate(selectedMonth, event.target.dataset.year);
             displayedYear.innerHTML = event.target.dataset.year;
             selectedYear = event.target.dataset.year;
@@ -613,7 +608,6 @@
               encodeURIComponent(year);
 
             this.href = url;
-            console.log(url);
             // Navigate to the URL
             document.location.href = url;
           });

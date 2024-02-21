@@ -111,7 +111,6 @@
 
       document.addEventListener("DOMContentLoaded", function () {
         let cars = window.api.getCars();
-        console.log(cars);
 
         document
           .getElementById("addRow")
@@ -285,7 +284,8 @@
 
         var rowMenu = [
           {
-            label: "🗑️ Supprimer la ligne",
+            label:
+              "<i class='fa-regular fa-trash-can' style='color: #c30909;'></i>  Supprimer la ligne",
             action: function (e, row) {
               row.delete();
             },
@@ -310,12 +310,6 @@
           }
         });
         table.on("cellEdited", async function (cell) {
-          console.log("cell edited");
-          console.log(cell.getRow().getData().id_vhcl);
-          let updatedData = {
-            [cell.getField()]: cell.getValue(),
-          };
-          console.log(updatedData);
           try {
             const response = await window.api.updateCars(
               cell.getRow().getData().id_vhcl,
