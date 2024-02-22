@@ -36,13 +36,13 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" aria-current="page" href="index.html"
+              <a id="index" class="nav-link" aria-current="page" href="#"
                 ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
                 Reservations |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="charges.html"
+              <a id="charges" class="nav-link" href="charges.html"
                 ><i
                   class="fa-solid fa-comment-dollar"
                   style="color: #ffffff"
@@ -51,14 +51,14 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link active" href="#">
+              <a id="credits" class="nav-link active" href="credits.html">
                 <i class="fa-solid fa-coins" style="color: #ffffff"></i>
 
                 Crédits |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="#">
+              <a id="avances" class="nav-link" href="avances.html">
                 <i
                   class="fa-solid fa-hand-holding-dollar"
                   style="color: #ffffff"
@@ -67,20 +67,20 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="cars.html">
+              <a id="cars" class="nav-link" href="cars.html">
                 <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
                 Park |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="clients.html">
+              <a id="clients" class="nav-link" href="clients.html">
                 <i class="fa-solid fa-person" style="color: #ffffff"></i>
                 Clients |
               </a>
             </li>
           </ul>
           <span class="text-white" id="navbarList"></span>
-          <a href="infos.html"
+          <a id="infos" href="infos.html"
             ><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i
           ></a>
         </div>
@@ -110,6 +110,40 @@
     <hr />
     <div class="container-fluid mb-5 shadow">
       <div id="table2"></div>
+    </div>
+    <hr />
+
+    <div class="accordion accordion-flush mb-5" id="accordionFlushExample">
+      <div class="accordion-item bg-body-secondary">
+        <h1 class="accordion-header bg-body-secondary">
+          <button
+            class="accordion-button collapsed bg-body-secondary"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseExample"
+            aria-expanded="false"
+            aria-controls="collapseExample"
+          >
+            <span class="h1"
+              >Reste du mois précédent :<span id="resteDisplay" class="h3">
+                Janvier 2024</span
+              ></span
+            >
+          </button>
+        </h1>
+
+        <div
+          id="collapseExample"
+          class="accordion-collapse collapse"
+          data-bs-parent="#collapseExample"
+        >
+          <div class="accordion-body bg-body-secondary">
+            <div class="mt-2 mb-5 mx-2">
+              <div id="table3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
@@ -176,13 +210,30 @@
     <script src="public/luxon.js"></script>
     <script src="public/tab/dist/js/tabulator.js"></script>
     <script>
-      const currentDate = new Date();
-      const localMonth = currentDate.getMonth() + 1;
-      const localYear = currentDate.getFullYear();
+      var urlParams = new URLSearchParams(window.location.search);
+      let monthString, yearString;
 
-      const monthString =
-        localMonth < 10 ? "0" + localMonth : localMonth.toString();
-      const yearString = localYear.toString();
+      monthString = urlParams.get("month");
+      yearString = urlParams.get("year");
+      console.log("TravelData", monthString, yearString);
+
+      let lastMonth = monthString - 1;
+      let lastYear = yearString;
+      if (lastMonth === 0) {
+        lastMonth = 12;
+        lastYear -= 1;
+      }
+
+      //  let lastMonth = localMonth - 1;
+      //  let lastYear = localYear;
+      // if (lastMonth === 0) {
+      //   lastMonth = 12;
+      //   lastYear -= 1;
+      //}
+
+      let lastMonthString =
+        lastMonth < 10 ? "0" + lastMonth : lastMonth.toString();
+
       //Title
       function numericMonthToName(numericMonth) {
         const months = [
@@ -204,6 +255,7 @@
       }
       //title
       const title = document.querySelector(".breadcrumb-item");
+      const resteDisplay = document.querySelector("#resteDisplay");
 
       document.addEventListener("DOMContentLoaded", function () {
         console.log(monthString, yearString);
@@ -212,7 +264,9 @@
         let nonPayed = window.api.getNonPayed(monthString, yearString);
 
         title.innerHTML = numericMonthToName(monthString) + " " + yearString;
-        console.log(credits);
+        resteDisplay.innerHTML =
+          " " + numericMonthToName(monthString - 1) + " " + yearString;
+
         //Making the current month active
         const activeMonth = document.querySelector(
           `a[data-month="${monthString}"]`
@@ -237,7 +291,8 @@
 
         var rowMenu = [
           {
-            label: "🗑️ Supprimer la ligne",
+            label:
+              "<i class='fa-regular fa-trash-can' style='color: #c30909;'></i>  Supprimer la ligne",
             action: function (e, row) {
               row.delete();
             },
@@ -287,7 +342,7 @@
               editor: "list",
               editorParams: {
                 values: clients,
-                autocomplete: "true",
+                autocomplete: true,
                 allowEmpty: true,
                 listOnEmpty: true,
                 freetext: true,
@@ -420,7 +475,10 @@
         async function getCreditsByDate(month, year) {
           let credits = await window.api.getCredits(month, year);
           let nonPayed = await window.api.getNonPayed(month, year);
+          let resteData = await window.api.getReste(lastMonthString, lastYear);
           title.innerHTML = numericMonthToName(month) + " " + year;
+          resteDisplay.innerHTML =
+            " " + numericMonthToName(lastMonth) + " " + lastYear;
           let clients = nonPayed
             .map((res) => res.nom) // Extract the 'nom' property from each reservation
             .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
@@ -435,6 +493,7 @@
 
           table.replaceData(credits);
           table2.replaceData(nonPayed);
+          table3.replaceData(resteData);
           table.updateColumnDefinition("nom", {
             editorParams: { values: clients },
           });
@@ -457,6 +516,15 @@
               }
             });
             selectedMonth = event.target.dataset.month;
+
+            lastMonth = selectedMonth - 1;
+            lastYear = selectedYear;
+            if (lastMonth === 0) {
+              lastMonth = 12;
+              lastYear -= 1;
+            }
+            lastMonthString =
+              lastMonth < 10 ? "0" + lastMonth : lastMonth.toString();
           });
         });
 
@@ -470,6 +538,8 @@
             getCreditsByDate(selectedMonth, event.target.dataset.year);
             displayedYear.innerHTML = event.target.dataset.year;
             selectedYear = event.target.dataset.year;
+
+            lastYear = selectedMonth === "01" ? selectedYear - 1 : selectedYear;
           });
         });
 
@@ -594,6 +664,93 @@
 
         // Update navbar content every 10 minutes
         setInterval(updateNavbar, 5 * 60 * 1000);
+
+        // Reste du mois précédent
+        console.log("SELECTEDMONTH", selectedMonth);
+        console.log("LAST", lastMonth);
+
+        const resteData = window.api.getReste(lastMonthString, lastYear);
+        console.log(resteData);
+
+        const table3 = new Tabulator("#table3", {
+          data: resteData,
+          layout: "fitDataTable",
+          columns: [
+            {
+              title: "Label",
+              field: "label",
+              formatter: function (cell) {
+                const count = cell.getRow().getData().count;
+                const val = cell.getValue();
+                return `  <b> ${val} (${count}) </b>    `;
+              },
+            },
+            { title: "Count", field: "count", visible: false, width: 200 },
+            { title: "Value", field: "value", bottomCalc: "sum", width: 200 },
+          ],
+        });
+
+        //REmebering month and year acrosss
+        const anchors = document.querySelectorAll("nav a");
+        anchors.forEach((anchor) => {
+          anchor.addEventListener("click", function (event) {
+            event.preventDefault();
+            // Get the destination and parameters based on the anchor's ID (or any other method)
+            var destination;
+            var month;
+            var year;
+            // Example: Set different destinations and parameters based on the anchor's ID
+            switch (this.id) {
+              case "index":
+                destination = "index.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "charges":
+                destination = "charges.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "credits":
+                destination = "credits.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "avances":
+                destination = "avances.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "cars":
+                destination = "cars.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "clients":
+                destination = "clients.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "infos":
+                destination = "infos.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+            }
+            // Construct the URL with the parameters
+            var url =
+              destination +
+              "?month=" +
+              encodeURIComponent(month) +
+              "&year=" +
+              encodeURIComponent(year);
+
+            this.href = url;
+            console.log(url);
+            // Navigate to the URL
+            document.location.href = url;
+          });
+        });
       });
     </script>
   </body>

@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS clients
     nom TEXT,
     tel TEXT
 );
+
+
 CREATE  TABLE IF NOT EXISTS  reservations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     idclient INTEGER,
@@ -31,7 +33,10 @@ CREATE  TABLE IF NOT EXISTS  reservations (
     status TEXT,
 	FOREIGN KEY (idclient) REFERENCES clients(idclient),  
 	FOREIGN KEY (id_vhcl) REFERENCES cars(id_vhcl)
+
+
 );
+
 
 CREATE TABLE IF NOT EXISTS credits (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,18 +53,17 @@ CREATE TABLE IF NOT EXISTS charges (
     date_charge TEXT,
     observation TEXT,
     prix REAL DEFAULT 0,
-    type_charge TEXT DEFAULT "General",
-    id_vhcl INTEGER,
-    
-    FOREIGN KEY (id_vhcl) REFERENCES cars(id_vhcl)
+    type_charge TEXT DEFAULT "General" 
 );
 CREATE TABLE IF NOT EXISTS avances (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date_avance TEXT,
     observation TEXT,
-    montant REAL,
-    type_avance TEXT,
-    idclient INTEGER,
+    montant REAL DEFAULT 0,
+    nom TEXT,
+    type_avance TEXT
     
-    FOREIGN KEY (idclient) REFERENCES clients(idclient)
-)
+);
+
+
+CREATE INDEX IF NOT EXISTS idx_date_sortie ON reservations(date_sortie);

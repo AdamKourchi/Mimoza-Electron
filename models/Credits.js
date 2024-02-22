@@ -12,13 +12,15 @@ exports.getCredits = function (month, year) {
   return stmt.all();
 };
 
+// WHERE date_sortie LIKE '__/${month}/${year}%'
+
 exports.getNonPayed = function (month, year) {
   const stmt = db.prepare(`
       SELECT *, clients.nom
       FROM reservations 
       LEFT JOIN clients ON reservations.idclient = clients.idclient
-      WHERE date_sortie LIKE '__/${month}/${year}%'
-      AND credit != 0;
+      WHERE credit != 0
+      AND date_sortie NOT LIKE '__/${month}/${year}%';
     `);
 
   return stmt.all();
@@ -161,4 +163,55 @@ exports.deleteCredits = (id, date, montant, client, dateP) => {
   } else {
     db.prepare(`DELETE FROM credits WHERE id = $id`).run({ id });
   }
+};
+
+exports.getReste = (month, year) => {
+  const stmt = db.prepare(
+    `
+    SELECT SUM(caisse) as caisse ,COUNT(*) as count_reservations
+    FROM reservations 
+    WHERE date_sortie LIKE '__/${month}/${year}%';
+    `
+  );
+  const caisse = stmt.get();
+
+  const stmt2 = db.prepare(`
+      SELECT SUM(prix) as charges, COUNT(*) as count_charges
+      FROM charges 
+      WHERE date_charge LIKE '__/${month}/${year}%';
+`);
+  const charges = stmt2.get();
+
+  const stmt3 = db.prepare(
+    `
+    Select SUM(montant) as avances, COUNT(*) as count_avances
+    FROM avances 
+    WHERE date_avance LIKE '__/${month}/${year}%';
+    `
+  );
+  const avances = stmt3.get();
+  const stmt4 = db.prepare(`
+    SELECT SUM(montant) as credits , COUNT(*) as count_credits
+    FROM credits 
+    WHERE date_credit LIKE '__/${month}/${year}%';
+  `);
+  const credits = stmt4.get();
+
+  credits.credits ? credits.credits : (credits.credits = 0);
+  charges.charges ? charges.charges : 0;
+  caisse.caisse ? caisse.caisse : 0;
+  avances.avances ? avances.avances : 0;
+
+  const reste = [
+    {
+      label: "Reservations",
+      value: +caisse.caisse,
+      count: caisse.count_reservations,
+    },
+    { label: "Charges", value: -charges.charges, count: charges.count_charges },
+    { label: "Credits", value: +credits.credits, count: credits.count_credits },
+    { label: "Avances", value: -avances.avances, count: avances.count_avances },
+  ];
+
+  return reste;
 };

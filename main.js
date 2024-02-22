@@ -1,5 +1,5 @@
-const { app, BrowserWindow } = require("electron/main");
-const path = require("node:path");
+const { app, BrowserWindow, ipcMain } = require("electron/main");
+const path = require("path");
 
 if (require("electron-squirrel-startup")) app.quit();
 
