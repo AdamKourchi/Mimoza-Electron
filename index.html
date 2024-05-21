@@ -10,7 +10,6 @@
   </head>
 
   <body class="bg-body-secondary">
-   
     <nav
       class="navbar navbar-expand-sm bg-dark sticky-top"
       data-bs-theme="dark"
@@ -37,13 +36,13 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link active" aria-current="page" href="#"
+              <a id="index" class="nav-link active" aria-current="page" href="#"
                 ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
                 Reservations |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="charges.html"
+              <a id="charges" class="nav-link" href="charges.html"
                 ><i
                   class="fa-solid fa-comment-dollar"
                   style="color: #ffffff"
@@ -52,14 +51,14 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="credits.html">
+              <a id="credits" class="nav-link" href="credits.html">
                 <i class="fa-solid fa-coins" style="color: #ffffff"></i>
 
                 Crédits |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="Avances.html">
+              <a id="avances" class="nav-link" href="avances.html">
                 <i
                   class="fa-solid fa-hand-holding-dollar"
                   style="color: #ffffff"
@@ -68,20 +67,22 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="cars.html">
+              <a id="cars" class="nav-link" href="cars.html">
                 <i class="fa-solid fa-car-side" style="color: #ffffff"></i>
                 Park |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a class="nav-link" href="clients.html">
+              <a id="clients" class="nav-link" href="clients.html">
                 <i class="fa-solid fa-person" style="color: #ffffff"></i>
                 Clients |
               </a>
             </li>
           </ul>
           <span class="text-white" id="navbarList"></span>
-          <a href="infos.html"><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i></a>
+          <a id="infos" href="infos.html"
+            ><i class="fa-solid fa-circle-info mx-2" style="color: #ffffff"></i
+          ></a>
         </div>
       </div>
     </nav>
@@ -164,13 +165,26 @@
     <script src="public/luxon.js"></script>
     <script src="public/tab/dist/js/tabulator.js"></script>
     <script>
-      const currentDate = new Date();
-      const localMonth = currentDate.getMonth() + 1;
-      const localYear = currentDate.getFullYear();
+      var urlParams = new URLSearchParams(window.location.search);
+      let monthString, yearString;
 
-      const monthString =
-        localMonth < 10 ? "0" + localMonth : localMonth.toString();
-      const yearString = localYear.toString();
+      if (urlParams.get("month") != null) {
+        // Get the value of the "month" parameter
+        monthString = urlParams.get("month");
+        // Get the value of the "year" parameter
+        yearString = urlParams.get("year");
+        console.log("TravelData", monthString, yearString);
+      } else {
+        console.log("NEW APP");
+        const currentDate = new Date();
+        const localMonth = currentDate.getMonth() + 1;
+        const localYear = currentDate.getFullYear();
+
+        monthString =
+          localMonth < 10 ? "0" + localMonth : localMonth.toString();
+        yearString = localYear.toString();
+        console.log(monthString, yearString);
+      }
 
       function numericMonthToName(numericMonth) {
         const months = [
@@ -198,6 +212,8 @@
         console.log(monthString, yearString);
         let reservations = window.api.getReservations(monthString, yearString);
         let cars = window.api.getCarsCodes();
+        let clients = window.api.getClients();
+
         const cars_codes = cars.map((car) => car.code);
         console.log(cars_codes);
         title.innerHTML = numericMonthToName(monthString) + " " + yearString;
@@ -298,12 +314,11 @@
           "F19",
         ];*/
 
-        let clients = reservations
-          .map((res) => res.nom) // Extract the 'nom' property from each reservation
-          .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
-          .filter((value, index, self) => self.indexOf(value) === index); // Filter out duplicate values
+        clients = clients.map((item) => item.nom);
+        // .filter((nom) => nom !== null && nom !== undefined && nom !== "") // Filter out null and undefined values
 
         console.log(reservations);
+
         let table = new Tabulator("#table", {
           index: "id",
           data: reservations,
@@ -344,7 +359,7 @@
               editor: "list",
               editorParams: {
                 values: cars_codes,
-                autocomplete: "true",
+                autocomplete: true,
                 allowEmpty: true,
                 listOnEmpty: true,
                 valuesLookup: true,
@@ -418,7 +433,8 @@
               title: "Credit",
               field: "credit",
               mutator: function (value, data) {
-                return data.montant - data.caisse;
+                var newValue = data.montant - data.caisse;
+                return newValue;
               },
               bottomCalc: "sum",
               bottomCalcFormatter: "money",
@@ -426,6 +442,8 @@
                 var value = cell.getValue();
                 if (value != 0) {
                   cell.getElement().style.backgroundColor = "#de9d9d";
+                } else {
+                  cell.getElement().style.backgroundColor = "";
                 }
                 var formattedValue = value.toLocaleString(undefined, {
                   minimumFractionDigits: formatterParams.precision || 2,
@@ -569,6 +587,68 @@
 
         // Update navbar content every 10 minutes
         setInterval(updateNavbar, 5 * 60 * 1000);
+
+        //REmebering month and year acrosss
+        const anchors = document.querySelectorAll("nav a");
+        anchors.forEach((anchor) => {
+          anchor.addEventListener("click", function (event) {
+            event.preventDefault();
+            // Get the destination and parameters based on the anchor's ID (or any other method)
+            var destination;
+            var month;
+            var year;
+            // Example: Set different destinations and parameters based on the anchor's ID
+            switch (this.id) {
+              case "index":
+                destination = "index.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "charges":
+                destination = "charges.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "credits":
+                destination = "credits.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "avances":
+                destination = "avances.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "cars":
+                destination = "cars.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "clients":
+                destination = "clients.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+              case "infos":
+              destination = "infos.html";
+                month = selectedMonth;
+                year = selectedYear;
+                break;
+            }
+            // Construct the URL with the parameters
+            var url =
+              destination +
+              "?month=" +
+              encodeURIComponent(month) +
+              "&year=" +
+              encodeURIComponent(year);
+
+            this.href = url;
+            console.log(url);
+            // Navigate to the URL
+            document.location.href = url;
+          });
+        });
       });
     </script>
   </body>

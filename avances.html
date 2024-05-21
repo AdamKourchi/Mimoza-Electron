@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css" />
     <link rel="stylesheet" href="assets/style.css" />
   </head>
-
   <body class="bg-body-secondary">
     <nav
       class="navbar navbar-expand-sm bg-dark sticky-top"
@@ -36,17 +35,13 @@
         <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item d-flex align-items-center">
-              <a
-                id="index"
-                class="nav-link"
-                aria-current="page"
-                href="index.html"
+              <a id="index" class="nav-link" aria-current="page" href="#"
                 ><i class="fa-solid fa-calendar" style="color: #ffffff"></i>
                 Reservations |
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a id="charges" class="nav-link active" href="#"
+              <a id="charges" class="nav-link" href="charges.html"
                 ><i
                   class="fa-solid fa-comment-dollar"
                   style="color: #ffffff"
@@ -62,7 +57,7 @@
               </a>
             </li>
             <li class="nav-item d-flex align-items-center">
-              <a id="avances" class="nav-link" href="avances.html">
+              <a id="avances" class="nav-link active" href="avances.html">
                 <i
                   class="fa-solid fa-hand-holding-dollar"
                   style="color: #ffffff"
@@ -92,7 +87,23 @@
     </nav>
 
     <div class="px-4">
-      <h1 class="mt-4">Charges :</h1>
+      <h1 class="mt-4">Avances :</h1>
+      <ol class="breadcrumb mb-4 d-block">
+        <li class="breadcrumb-item fs-3 active d-block"></li>
+      </ol>
+    </div>
+
+    <hr />
+    <div class="container-fluid shadow">
+      <div id="table" class="container-fluid"></div>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-end mt-2 mb-2">
+      <button id="addRow1" class="btn btn-success">+ Ajouter</button>
+    </div>
+
+    <div class="px-4">
+      <h1 class="mt-4">Verssements :</h1>
       <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item fs-3 active"></li>
       </ol>
@@ -100,12 +111,29 @@
 
     <hr />
     <div class="container-fluid shadow">
-      <div id="table"></div>
+      <div id="table2" class="container-fluid"></div>
+    </div>
+
+    <div class="container-fluid d-flex justify-content-end mt-2 mb-2">
+      <button id="addRow2" class="btn btn-success">+ Ajouter</button>
+    </div>
+
+    <div class="px-4">
+      <h1 class="mt-4">Driss :</h1>
+      <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item fs-3 active"></li>
+      </ol>
+    </div>
+
+    <hr />
+    <div class="container-fluid shadow">
+      <div id="table3" class="container-fluid"></div>
     </div>
 
     <div class="container-fluid d-flex justify-content-end mt-2 mb-5">
-      <button id="addRow" class="btn btn-success">+ Ajouter</button>
+      <button id="addRow3" class="btn btn-success">+ Ajouter</button>
     </div>
+
     <div class="fixed-bottom bg-dark px-3 d-flex justify-content-between">
       <ul class="nav nav-underline" data-bs-theme="dark">
         <li class="nav-item footer">
@@ -171,11 +199,11 @@
 
     <script>
       var urlParams = new URLSearchParams(window.location.search);
-      // Get the value of the "month" parameter
-      var monthString = urlParams.get("month");
-      // Get the value of the "year" parameter
-      var yearString = urlParams.get("year");
+      let monthString, yearString;
+      monthString = urlParams.get("month");
+      yearString = urlParams.get("year");
       console.log("TravelData", monthString, yearString);
+
       let selectedMonth = monthString;
       let selectedYear = yearString;
 
@@ -197,17 +225,27 @@
         const index = parseInt(numericMonth, 10) - 1;
         return months[index];
       }
-      //title
-
-      const title = document.querySelector(".breadcrumb-item");
 
       document.addEventListener("DOMContentLoaded", function () {
-        let charges = window.api.getCharges(monthString, yearString);
-        console.log(charges);
-        console.log(monthString, yearString);
+        const titles = document.querySelectorAll(".breadcrumb-item");
+        titles.forEach((title) => {
+          title.innerHTML = numericMonthToName(monthString) + " " + yearString;
+        });
 
-        title.innerHTML = numericMonthToName(monthString) + " " + yearString;
-        console.log(charges);
+        let avances = window.api.getAvances(monthString, yearString);
+        console.log(avances);
+        let avance = [];
+        let verssements = [];
+        let driss = [];
+        avances.forEach((el) => {
+          if (el.type_avance === "avance") {
+            avance.push(el);
+          } else if (el.type_avance === "verssement") {
+            verssements.push(el);
+          } else {
+            driss.push(el);
+          }
+        });
         //Making the current month active
         const activeMonth = document.querySelector(
           `a[data-month="${monthString}"]`
@@ -218,41 +256,57 @@
         const displayedYear = document.querySelector(".dropdown-toggle");
         displayedYear.innerHTML = yearString;
 
+        console.log(avance, verssements, driss);
+
         document
-          .getElementById("addRow")
+          .getElementById("addRow1")
           .addEventListener("click", function () {
-            table.addRow({
-              date_charge: "",
-              observation: "",
-              prix: "",
-            });
+            table.addRow({});
           });
+        document
+          .getElementById("addRow2")
+          .addEventListener("click", function () {
+            table2.addRow({});
+          });
+        document
+          .getElementById("addRow3")
+          .addEventListener("click", function () {
+            table3.addRow({});
+          });
+
+        // Tabulator
+        let types = ["VERSEMENT", "ESPECE"];
+
         var rowMenu = [
           {
-            label: "🗑️ Supprimer la ligne",
+            label: "<i class='fas fa-trash'></i> Delete Row",
             action: function (e, row) {
               row.delete();
             },
           },
         ];
-        var table = new Tabulator("#table", {
-          columnCalcs: "both",
-          data: charges,
-          index: "id",
-          layout: "fitColumns",
-          virtualDom: true,
-          rowContextMenu: rowMenu,
-          groupBy: "type_charge",
-          groupClosedShowCalcs: true,
 
+        const table = new Tabulator("#table", {
+          data: avance,
+          layout: "fitColumns",
+          rowContextMenu: rowMenu,
+          index: "id",
           columns: [
             {
-              title: "Type",
-              field: "type_charge",
-              editor: "list",
+              title: "Date",
+              field: "date_avance",
+              editor: "date",
+              editorParams: {
+                format: "dd/MM/yyyy",
+              },
+            },
+
+            {
+              title: "Employé",
+              field: "nom",
               editor: "list",
               editorParams: {
-                values: ["General", "Vidange", "Plaquet", "Pneu", "Visite"],
+                values: ["Med", "Said", "Zakia", "Hafid", "Abdo"],
                 autocomplete: true,
                 allowEmpty: true,
                 listOnEmpty: true,
@@ -260,91 +314,191 @@
               },
             },
             {
+              title: "Montant",
+              field: "montant",
+              editor: "number",
+              editorParams: {
+                step: 100,
+                min: 0,
+              },
+              formatter: "money",
+              bottomCalc: "sum",
+              bottomCalcParams: {
+                precision: 2,
+              },
+              bottomCalcFormatter: "money",
+            },
+            {
+              title: "Observation",
+              field: "observation",
+              editor: "input",
+            },
+          ],
+        });
+
+        const table2 = new Tabulator("#table2", {
+          data: verssements,
+          layout: "fitColumns",
+          rowContextMenu: rowMenu,
+          index: "id",
+          columns: [
+            {
               title: "Date",
-              field: "date_charge",
+              field: "date_avance",
               editor: "date",
               editorParams: {
                 format: "dd/MM/yyyy",
               },
             },
             {
-              title: "Charges",
+              title: "Versement",
               field: "observation",
               editor: "input",
             },
-
             {
-              title: "Prix",
-              field: "prix",
-              editor: "input",
-              bottomCalc: "sum",
-              formatter: "money",
-              bottomCalcFormatter: function (cell, formatterParams) {
-                var value = cell.getValue();
-                cell.getElement().style.color = "red";
-
-                // Format options
-                var options = {
-                  minimumFractionDigits: formatterParams.precision || 2,
-                  maximumFractionDigits: formatterParams.precision || 2,
-                  useGrouping: true, // Enable grouping (thousands separator)
-                };
-
-                // Format the number using Intl.NumberFormat
-                var formattedValue = new Intl.NumberFormat(
-                  "en-US",
-                  options
-                ).format(value);
-                return formattedValue;
+              title: "Montant",
+              field: "montant",
+              editor: "number",
+              editorParams: {
+                step: 100,
+                min: 0,
               },
-
+              formatter: "money",
+              bottomCalc: "sum",
               bottomCalcParams: {
                 precision: 2,
               },
+              bottomCalcFormatter: "money",
             },
           ],
         });
 
-        table.on("rowAdded", async function (row) {
-          try {
-            const response = await window.api.storeCharges();
-            console.log(response);
-            row.update({
-              id: response.id,
-              date_charge: response.date_charge,
-              observation: response.observation,
-              prix: response.prix,
-              type_charge: response.type_charge,
-            });
-          } catch (error) {
-            console.error("Error storing charges:", error);
-          }
+        const table3 = new Tabulator("#table3", {
+          data: driss,
+          layout: "fitColumns",
+          rowContextMenu: rowMenu,
+          index: "id",
+          columns: [
+            {
+              title: "Date",
+              field: "date_avance",
+              editor: "date",
+              editorParams: {
+                format: "dd/MM/yyyy",
+              },
+            },
+            {
+              title: "Versement",
+              field: "observation",
+              editor: "input",
+            },
+            {
+              title: "Montant",
+              field: "montant",
+              editor: "number",
+              editorParams: {
+                step: 100,
+                min: 0,
+              },
+              formatter: "money",
+              bottomCalc: "sum",
+              bottomCalcParams: {
+                precision: 2,
+              },
+              bottomCalcFormatter: "money",
+            },
+          ],
         });
-        table.on("cellEdited", async function (cell) {
+
+        // Define the event listener functions separately
+        async function cellEditedHandler(cell) {
           try {
-            const response = await window.api.updateCharges(
+            const response = await window.api.updateAvances(
               cell.getRow().getData().id,
               cell.getField(),
               cell.getValue()
             );
             console.log(response);
           } catch (error) {
-            console.error("Error updating charges:", error);
+            console.error("Error updating avances:", error);
           }
-        });
-        table.on("rowDeleted", async function (row) {
+        }
+
+        function rowDeletedHandler(row) {
+          window.api.deleteAvances(row.getData().id);
+          console.log("row deleted");
+        }
+
+        table.on("rowAdded", async function (row) {
           try {
-            const response = await window.api.deleteCharges(row.getData().id); // Call the deleteReservations function from the preload script
+            const response = await window.api.storeAvances("avance");
             console.log(response);
+            row.update({
+              id: response.id,
+              date_avance: response.date_avance,
+              montant: response.montant,
+            });
           } catch (error) {
-            console.error("Error deleting charges:", error);
+            console.error("Error storing avances:", error);
           }
         });
-        //get charges by date
-        async function getChargesByDate(month, year) {
-          let charges = await window.api.getCharges(month, year);
-          title.innerHTML = numericMonthToName(month) + " " + year;
-          table.replaceData(charges);
+        table.on("cellEdited", cellEditedHandler);
+        table.on("rowDeleted", rowDeletedHandler);
+
+        table2.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeAvances("verssement");
+            console.log(response);
+            row.update({
+              id: response.id,
+              date_avance: response.date_avance,
+              montant: response.montant,
+            });
+          } catch (error) {
+            console.error("Error storing avances:", error);
+          }
+        });
+        table2.on("cellEdited", cellEditedHandler);
+        table2.on("rowDeleted", rowDeletedHandler);
+
+        table3.on("rowAdded", async function (row) {
+          try {
+            const response = await window.api.storeAvances("driss");
+            console.log(response);
+            row.update({
+              id: response.id,
+              date_avance: response.date_avance,
+              montant: response.montant,
+            });
+          } catch (error) {
+            console.error("Error storing avances:", error);
+          }
+        });
+        table3.on("cellEdited", cellEditedHandler);
+        table3.on("rowDeleted", rowDeletedHandler);
+
+        // Function to get reservations by date
+
+        async function getAvancesByDate(month, year) {
+          let avances = await window.api.getAvances(month, year);
+          titles.forEach((title) => {
+            title.innerHTML = numericMonthToName(month) + " " + year;
+          });
+          avance = [];
+          verssements = [];
+          driss = [];
+          avances.forEach((el) => {
+            if (el.type_avance === "avance") {
+              avance.push(el);
+            } else if (el.type_avance === "verssement") {
+              verssements.push(el);
+            } else {
+              driss.push(el);
+            }
+          });
+          table.replaceData(avance);
+          table2.replaceData(verssements);
+          table3.replaceData(driss);
         }
 
         // Add event listeners to the months links in Footer
@@ -353,7 +507,7 @@
           link.addEventListener("click", function (event) {
             event.preventDefault();
             console.log(event.target.dataset.month);
-            getChargesByDate(event.target.dataset.month, selectedYear);
+            getAvancesByDate(event.target.dataset.month, selectedYear);
             event.target.classList.add("active");
             monthsLinks.forEach(function (link) {
               if (link !== event.target) {
@@ -371,12 +525,11 @@
           link.addEventListener("click", function (event) {
             event.preventDefault();
             console.log(event.target.dataset.year);
-            getChargesByDate(selectedMonth, event.target.dataset.year);
+            getAvancesByDate(selectedMonth, event.target.dataset.year);
             displayedYear.innerHTML = event.target.dataset.year;
             selectedYear = event.target.dataset.year;
           });
         });
-
         //Islamic Duaa
         const strings = [
           "اللهم اهدنا",
@@ -446,9 +599,9 @@
                 year = selectedYear;
                 break;
               case "infos":
-                destination = "infos.html";
-                month = selectedMonth;
-                year = selectedYear;
+                destination= "infos.html";
+                month= selectedMonth;
+                year= selectedYear;
                 break;
             }
             // Construct the URL with the parameters

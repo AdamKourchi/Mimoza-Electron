@@ -4,7 +4,8 @@ const Cars = require("./models/Cars.js");
 const Credits = require("./models/Credits.js");
 const Charges = require("./models/Charges.js");
 const Clients = require("./models/Clients.js");
-const Avances = require("./models/Avances.js")
+const Avances = require("./models/Avances.js");
+
 contextBridge.exposeInMainWorld("api", {
   //Resrervations
   getReservations: (month, year) => Reservations.getReservations(month, year),
@@ -26,6 +27,7 @@ contextBridge.exposeInMainWorld("api", {
     Credits.updateCredits(id, field, value, date, montant, client, dateP),
   deleteCredits: (id, date, montant, client, dateP) =>
     Credits.deleteCredits(id, date, montant, client, dateP),
+  getReste: (month, year) => Credits.getReste(month, year),
   //Charges
   getCharges: (month, year) => Charges.getCharges(month, year),
   storeCharges: () => Charges.storeCharges(),
@@ -34,9 +36,9 @@ contextBridge.exposeInMainWorld("api", {
   //Clients
   getClients: () => Clients.getClients(),
   updateClient: (id, field, value) => Clients.updateClient(id, field, value),
-  //Avances 
-  getAvances:()=>Avances.getAvances(),
-  storeAvances:()=>Avances.getAvances(),
-  updateAvances: (id,field,value) => Avances.updateAvances(id,field, value),
-
+  //Avances
+  getAvances: (month,year) => Avances.getAvances(month,year),
+  storeAvances: (type) => Avances.storeAvances(type),
+  updateAvances: (id, field, value) => Avances.updateAvances(id, field, value),
+  deleteAvances: (id) => Avances.deleteAvances(id),
 });

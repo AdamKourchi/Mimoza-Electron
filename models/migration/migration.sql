@@ -57,6 +57,8 @@ CREATE TABLE IF NOT EXISTS avances (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     date_avance TEXT,
     observation TEXT,
-    montant REAL,
+    montant REAL DEFAULT 0,
+    nom TEXT,
     type_avance TEXT
+    
 )
